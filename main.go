@@ -10,16 +10,17 @@ func main() {
 	game.OutputMissingCards()
 
 	game.FlipPiles()
-	game.OutputGame()
 
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 120; i++ {
 		if ! game.FindAndMakePossibleMoves() {
-			println("No new moves.")
-			break
+			game.Deck.NextCard()
+			game.Moves++
+			continue
 		}
 		game.FlipPiles()
-		game.OutputGame()
 	}
+	game.OutputGame()
 
 	//fmt.Printf("%#v\n", game)
+
 }

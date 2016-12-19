@@ -15,6 +15,13 @@ func (d *Deck) GetCurrentCard() (Card, error) {
 }
 
 func (d *Deck) PlayCurrentCard() {
-	d.Cards = append(d.Cards[:d.Position], d.Cards[d.Position + 1:]...)
+	d.Cards = append(d.Cards[:d.Position - 1], d.Cards[d.Position:]...)
 	d.Position--
+}
+
+func (d *Deck) NextCard() {
+	d.Position++
+	if d.Position > len(d.Cards) {
+		d.Position = 0
+	}
 }

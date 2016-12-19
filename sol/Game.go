@@ -45,7 +45,7 @@ func (g *Game) OutputMissingCards() {
 
 func (g *Game) OutputGame() {
 	found := true
-	printString := ""
+	printString := "-------\n"
 	for pile := 0; pile < 7; pile++ {
 		if len(g.Piles[pile].BaseCards) == 0 {
 			printString = printString + "  -  "
@@ -70,10 +70,18 @@ func (g *Game) OutputGame() {
 	}
 	currentCard, err := g.Deck.GetCurrentCard()
 	if err != nil {
-		println("Deck empty")
-	} else {
+		if len(g.Deck.Cards) > 0 {
+			g.Deck.NextCard()
+			g.Moves++
+			currentCard, err = g.Deck.GetCurrentCard()
+		} else {
+			println("Deck empty")
+		}
+	}
+	if err == nil {
 		fmt.Printf("Deck: %d - %s\n", g.Deck.Position, currentCard.GetString())
 	}
+	fmt.Printf("Moves: %d\n", g.Moves)
 }
 
 func (g *Game) FindPossibleMoves() []Move {
@@ -88,7 +96,7 @@ func (g *Game) FindPossibleMoves() []Move {
 			if sourcePile.StackCards[0].Number == 13 && len(sourcePile.BaseCards) == 0 {
 				continue
 			}
-			fmt.Printf("Can move %#v to pile %#v\n", sourcePile.StackCards[0], targetPile.StackCards)
+			//fmt.Printf("Can move %#v to pile %#v\n", sourcePile.StackCards[0], targetPile.StackCards)
 			possibleMove := Move{
 				SourceCard: sourcePile.StackCards[0],
 				SourcePileId: sourcePileId,
@@ -139,7 +147,7 @@ func (g *Game) MakeMove(m Move) {
 			return
 		}
 		if currentCard != m.SourceCard || ! targetPile.CanMoveCardToPile(m.SourceCard) {
-			fmt.Print("Cannot make move.\n")
+			//fmt.Print("Cannot make move.\n")
 			return
 		}
 		g.Piles[m.TargetPileId].StackCards = append(g.Piles[m.TargetPileId].StackCards, currentCard)
@@ -148,7 +156,7 @@ func (g *Game) MakeMove(m Move) {
 	}
 	sourcePile := g.Piles[m.SourcePileId]
 	if len(sourcePile.StackCards) == 0 || !targetPile.CanMoveCardToPile(sourcePile.StackCards[0]) {
-		fmt.Print("Cannot make move.\n")
+		//fmt.Print("Cannot make move.\n")
 		return
 	}
 	g.Piles[m.TargetPileId].StackCards = append(g.Piles[m.TargetPileId].StackCards, g.Piles[m.SourcePileId].StackCards...)
