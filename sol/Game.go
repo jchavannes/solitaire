@@ -88,9 +88,15 @@ func (g *Game) FindPossibleMoves() []Move {
 	var possibleMoves []Move
 	for sourcePileId := 0; sourcePileId < 7; sourcePileId++ {
 		sourcePile := g.Piles[sourcePileId]
+		if len(sourcePile.StackCards) == 0 {
+			continue
+		}
+		if sourcePile.StackCards[0].Number == 1 {
+			
+		}
 		for targetPileId := 0; targetPileId < 7; targetPileId++ {
 			targetPile := g.Piles[targetPileId]
-			if targetPileId == sourcePileId || len(sourcePile.StackCards) == 0 || ! targetPile.CanMoveCardToPile(sourcePile.StackCards[0]) {
+			if targetPileId == sourcePileId || ! targetPile.CanMoveCardToPile(sourcePile.StackCards[0]) {
 				continue
 			}
 			if sourcePile.StackCards[0].Number == 13 && len(sourcePile.BaseCards) == 0 {
