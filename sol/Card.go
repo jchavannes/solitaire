@@ -1,5 +1,9 @@
 package sol
 
+import (
+	"fmt"
+)
+
 type Card struct {
 	/**
 	 * A = 1
@@ -10,4 +14,8 @@ type Card struct {
 	 */
 	Number int
 	Suit   Suit
+}
+
+func (c *Card) GetString() string {
+	return fmt.Sprintf("%2d%c", c.Number, c.Suit[0])
 }

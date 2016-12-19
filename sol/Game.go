@@ -8,30 +8,17 @@ type Game struct {
 	Piles       [7]Pile
 	Foundations [4]Foundation
 	Deck        Deck
+	Moves       int
 }
 
-func (g *Game) FlipPiles() {
+func (g *Game) FlipPiles() bool {
+	flipped := false
 	for pile := 0; pile < 7; pile++ {
-		if len(g.Piles[pile].StackCards) == 0 && len(g.Piles[pile].BaseCards) >= 1 {
-			g.Piles[pile].StackCards = append(g.Piles[pile].StackCards, g.Piles[pile].BaseCards[0])
-			g.Piles[pile].BaseCards = g.Piles[pile].BaseCards[1:]
+		if g.Piles[pile].Flip() {
+			flipped = true
 		}
 	}
-}
-
-func (g *Game) CanMoveCardToStack(card Card, pile int) bool {
-	pileSize := len(g.Piles[pile].StackCards)
-	if pileSize == 0 && card.Number == 13 {
-		return true
-	}
-	if pileSize == 0 || card.Number < 2 {
-		return false
-	}
-	stackCard := g.Piles[pile].StackCards[pileSize - 1]
-	if stackCard.Number == card.Number + 1 && IsOppositeSuits(stackCard.Suit, card.Suit) {
-		return true
-	}
-	return false
+	return flipped
 }
 
 func (g *Game) OutputMissingCards() {
@@ -73,7 +60,7 @@ func (g *Game) OutputGame() {
 		for pile := 0; pile < 7; pile++ {
 			if len(g.Piles[pile].StackCards) > cardNum {
 				card := g.Piles[pile].StackCards[cardNum]
-				printString = printString + fmt.Sprintf(" %2d%c ", card.Number, card.Suit[0])
+				printString = printString + fmt.Sprintf(" %3s ", card.GetString())
 				found = true
 			} else {
 				printString = printString + "     "
@@ -81,30 +68,54 @@ func (g *Game) OutputGame() {
 		}
 		println(printString)
 	}
+	currentCard, err := g.Deck.GetCurrentCard()
+	if err != nil {
+		println("Deck empty")
+	} else {
+		fmt.Printf("Deck: %d - %s\n", g.Deck.Position, currentCard.GetString())
+	}
 }
 
 func (g *Game) FindPossibleMoves() []Move {
 	var possibleMoves []Move
 	for sourcePileId := 0; sourcePileId < 7; sourcePileId++ {
-		sourcePile := g.Piles[sourcePileId].StackCards
+		sourcePile := g.Piles[sourcePileId]
 		for targetPileId := 0; targetPileId < 7; targetPileId++ {
-			targetPile := g.Piles[targetPileId].StackCards
-			if targetPileId == sourcePileId || len(sourcePile) == 0 || !g.CanMoveCardToStack(sourcePile[0], targetPileId) {
+			targetPile := g.Piles[targetPileId]
+			if targetPileId == sourcePileId || len(sourcePile.StackCards) == 0 || ! targetPile.CanMoveCardToPile(sourcePile.StackCards[0]) {
 				continue
 			}
-			if sourcePile[0].Number == 13 && len(g.Piles[sourcePileId].BaseCards) == 0 {
+			if sourcePile.StackCards[0].Number == 13 && len(sourcePile.BaseCards) == 0 {
 				continue
 			}
-			fmt.Printf("Can move %#v to pile %#v\n", sourcePile[0], targetPile)
+			fmt.Printf("Can move %#v to pile %#v\n", sourcePile.StackCards[0], targetPile.StackCards)
 			possibleMove := Move{
-				SourceCard: sourcePile[0],
+				SourceCard: sourcePile.StackCards[0],
 				SourcePileId: sourcePileId,
 				TargetPileId: targetPileId,
 			}
-			if len(targetPile) > 0 {
-				possibleMove.TargetCard = targetPile[len(targetPile) - 1]
+			if len(targetPile.StackCards) > 0 {
+				possibleMove.TargetCard = targetPile.StackCards[len(targetPile.StackCards) - 1]
 			}
 			possibleMoves = append(possibleMoves, possibleMove)
+		}
+	}
+	if g.Deck.Position == 0 && len(g.Deck.Cards) > 0 {
+		g.Deck.Position = 1
+		g.Moves++
+	}
+	for targetPileId := 0; targetPileId < 7; targetPileId++ {
+		targetPile := g.Piles[targetPileId]
+		currentCard, err := g.Deck.GetCurrentCard()
+		if err != nil {
+			continue
+		}
+		if targetPile.CanMoveCardToPile(currentCard) {
+			possibleMoves = append(possibleMoves, Move{
+				SourceCard: currentCard,
+				SourcePileId: 7,
+				TargetPileId: targetPileId,
+			})
 		}
 	}
 	return possibleMoves
@@ -121,20 +132,26 @@ func (g *Game) FindAndMakePossibleMoves() bool {
 }
 
 func (g *Game) MakeMove(m Move) {
-	targetPile := g.Piles[m.TargetPileId].StackCards
-	sourcePile := g.Piles[m.SourcePileId].StackCards
-	if len(sourcePile) == 0 {
+	targetPile := g.Piles[m.TargetPileId]
+	if m.SourcePileId == 7 {
+		currentCard, err := g.Deck.GetCurrentCard()
+		if err != nil {
+			return
+		}
+		if currentCard != m.SourceCard || ! targetPile.CanMoveCardToPile(m.SourceCard) {
+			fmt.Print("Cannot make move.\n")
+			return
+		}
+		g.Piles[m.TargetPileId].StackCards = append(g.Piles[m.TargetPileId].StackCards, currentCard)
+		g.Deck.PlayCurrentCard()
+		return
+	}
+	sourcePile := g.Piles[m.SourcePileId]
+	if len(sourcePile.StackCards) == 0 || !targetPile.CanMoveCardToPile(sourcePile.StackCards[0]) {
 		fmt.Print("Cannot make move.\n")
-		return
-	}
-	if len(targetPile) > 0 && m.TargetCard != targetPile[len(targetPile) - 1] {
-		fmt.Printf("Cannot make move, target card missing: %#v\n", m)
-		return
-	}
-	if len(targetPile) > 0 && m.SourceCard != sourcePile[0] {
-		fmt.Printf("Cannot make move, source card missing: %#v\n", m)
 		return
 	}
 	g.Piles[m.TargetPileId].StackCards = append(g.Piles[m.TargetPileId].StackCards, g.Piles[m.SourcePileId].StackCards...)
 	g.Piles[m.SourcePileId].StackCards = g.Piles[m.SourcePileId].StackCards[:0]
+	g.Moves++
 }
