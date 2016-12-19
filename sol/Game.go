@@ -147,6 +147,13 @@ func (g *Game) FindPossibleMoves() []Move {
 
 	var possibleMoves []Move
 
+	possibleMoves = append(possibleMoves, g.findPileToPileMoves()...)
+	if len(possibleMoves) > 0 {
+		return possibleMoves
+	}
+
+	possibleMoves = append(possibleMoves, g.findDeckToPileMoves()...)
+
 	possibleMoves = append(possibleMoves, g.findPileToFoundationMoves()...)
 	if len(possibleMoves) > 0 {
 		return possibleMoves
@@ -156,13 +163,6 @@ func (g *Game) FindPossibleMoves() []Move {
 	if len(possibleMoves) > 0 {
 		return possibleMoves
 	}
-
-	possibleMoves = append(possibleMoves, g.findPileToPileMoves()...)
-	if len(possibleMoves) > 0 {
-		return possibleMoves
-	}
-
-	possibleMoves = append(possibleMoves, g.findDeckToPileMoves()...)
 
 	return possibleMoves
 }
@@ -325,8 +325,9 @@ func (g *Game) moveDeckToPile(m Move) {
 }
 
 func (g *Game) movePileToFoundation(m Move) {
-	currentCard := m.SourceCard
-	if currentCard != g.Piles[m.SourcePileId].StackCards[len(g.Piles[m.SourcePileId].StackCards) - 1] {
+	sourcePile := g.Piles[m.SourcePileId]
+	currentCard := sourcePile.StackCards[len(sourcePile.StackCards) - 1]
+	if currentCard != m.SourceCard {
 		return
 	}
 	for foundationId, foundation := range g.Foundations {
@@ -336,7 +337,13 @@ func (g *Game) movePileToFoundation(m Move) {
 			continue
 		}
 		g.Foundations[foundationId].Cards = append(g.Foundations[foundationId].Cards, currentCard)
-		g.Piles[m.SourcePileId].StackCards = g.Piles[m.SourcePileId].StackCards[:len(g.Piles[m.SourcePileId].StackCards) - 1]
+		if currentCard.Number == 8 && currentCard.Suit == Hearts {
+			fmt.Printf("Stack: %#v\n", g.Piles[m.SourcePileId].StackCards)
+		}
+		g.Piles[m.SourcePileId].StackCards = sourcePile.StackCards[:len(sourcePile.StackCards) - 1]
+		if currentCard.Number == 8 && currentCard.Suit == Hearts {
+			fmt.Printf("Stack: %#v\n", g.Piles[m.SourcePileId].StackCards)
+		}
 		g.Moves++
 		break
 	}

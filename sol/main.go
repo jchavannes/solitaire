@@ -20,7 +20,7 @@ func IsCardInPile(stack []Card, match Card) bool {
 }
 
 func GetSampleGame() *Game {
-	return &Game{
+	/*return &Game{
 		Piles: [7]Pile{
 			{BaseCards: []Card{
 				{Number: 11, Suit: Clubs},
@@ -90,6 +90,78 @@ func GetSampleGame() *Game {
 			{Number: 13, Suit: Clubs},
 			{Number: 2, Suit: Hearts},
 			{Number: 11, Suit: Diamonds},
+		}},
+	}*/
+	return &Game{
+		Piles: [7]Pile{
+			{BaseCards: []Card{
+				{Number: 1, Suit: Diamonds},
+			}},
+			{BaseCards: []Card{
+				{Number: 1, Suit: Spades},
+				{Number: 10, Suit: Spades},
+			}},
+			{BaseCards: []Card{
+				{Number: 12, Suit: Clubs},
+				{Number: 5, Suit: Spades},
+				{Number: 6, Suit: Diamonds},
+			}},
+			{BaseCards: []Card{
+				{Number: 11, Suit: Spades},
+				{Number: 7, Suit: Spades},
+				{Number: 3, Suit: Diamonds},
+				{Number: 11, Suit: Diamonds},
+			}},
+			{BaseCards: []Card{
+				{Number: 9, Suit: Spades},
+				{Number: 9, Suit: Clubs},
+				{Number: 7, Suit: Clubs},
+				{Number: 8, Suit: Diamonds},
+				{Number: 13, Suit: Diamonds},
+			}},
+			{BaseCards: []Card{
+				{Number: 8, Suit: Hearts},
+				{Number: 8, Suit: Clubs},
+				{Number: 6, Suit: Clubs},
+				{Number: 10, Suit: Clubs},
+				{Number: 4, Suit: Diamonds},
+				{Number: 6, Suit: Spades},
+			}},
+			{BaseCards: []Card{
+				{Number: 8, Suit: Hearts},
+				{Number: 13, Suit: Clubs},
+				{Number: 3, Suit: Hearts},
+				{Number: 5, Suit: Hearts},
+				{Number: 1, Suit: Clubs},
+				{Number: 7, Suit: Hearts},
+				{Number: 11, Suit: Clubs},
+			}},
+		},
+		Deck: Deck{Cards: []Card{
+			{Number: 4, Suit: Spades},
+			{Number: 4, Suit: Hearts},
+			{Number: 3, Suit: Clubs},
+			{Number: 10, Suit: Diamonds},
+			{Number: 9, Suit: Diamonds},
+			{Number: 4, Suit: Clubs},
+			{Number: 9, Suit: Hearts},
+			{Number: 5, Suit: Diamonds},
+			{Number: 6, Suit: Hearts},
+			{Number: 11, Suit: Hearts},
+			{Number: 2, Suit: Diamonds},
+			{Number: 13, Suit: Hearts},
+			{Number: 1, Suit: Hearts},
+			{Number: 2, Suit: Hearts},
+			{Number: 5, Suit: Clubs},
+			{Number: 3, Suit: Spades},
+			{Number: 10, Suit: Hearts},
+			{Number: 12, Suit: Spades},
+			{Number: 2, Suit: Clubs},
+			{Number: 12, Suit: Diamonds},
+			{Number: 2, Suit: Spades},
+			{Number: 13, Suit: Spades},
+			{Number: 12, Suit: Hearts},
+			{Number: 7, Suit: Diamonds},
 		}},
 	}
 }

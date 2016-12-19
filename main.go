@@ -11,7 +11,7 @@ func main() {
 
 	game.FlipPiles()
 
-	for i := 0; i < 150; i++ {
+	for i := 0; i < 200; i++ {
 		if ! game.FindAndMakePossibleMoves() {
 			if len(game.Deck.Cards) == 0 {
 				break
@@ -21,8 +21,8 @@ func main() {
 		} else {
 			game.FlipPiles()
 		}
-		if i % 10 == 0 {
-			//game.OutputGame()
+		if i % 25 == 0 {
+			game.OutputGame()
 		}
 	}
 	game.OutputGame()
