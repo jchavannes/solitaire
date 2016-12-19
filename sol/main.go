@@ -58,11 +58,11 @@ func GetSampleGame() *Game {
 			{BaseCards: []Card{
 				{Number: 13, Suit: Hearts},
 				{Number: 5, Suit: Clubs},
-				{Number: 11, Suit: Spades},
+				{Number: 13, Suit: Spades},
 				{Number: 10, Suit: Spades},
 				{Number: 9, Suit: Clubs},
 				{Number: 3, Suit: Diamonds},
-				{Number: 13, Suit: Spades},
+				{Number: 11, Suit: Spades},
 			}},
 		},
 		Deck: Deck{Cards: []Card{

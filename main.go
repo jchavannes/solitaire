@@ -11,16 +11,21 @@ func main() {
 
 	game.FlipPiles()
 
-	for i := 0; i < 120; i++ {
+	for i := 0; i < 150; i++ {
 		if ! game.FindAndMakePossibleMoves() {
+			if len(game.Deck.Cards) == 0 {
+				break
+			}
 			game.Deck.NextCard()
 			game.Moves++
-			continue
+		} else {
+			game.FlipPiles()
 		}
-		game.FlipPiles()
+		if i % 10 == 0 {
+			//game.OutputGame()
+		}
 	}
 	game.OutputGame()
 
-	//fmt.Printf("%#v\n", game)
-
+	//fmt.Printf("%#v\n", game.FindPossibleMoves())
 }
