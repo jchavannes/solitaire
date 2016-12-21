@@ -19,8 +19,8 @@ func IsCardInPile(stack []Card, match Card) bool {
 	return false
 }
 
-func GetSampleGame() *Game {
-	/*return &Game{
+func GetGame1() *Game {
+	return &Game{
 		Piles: [7]Pile{
 			{BaseCards: []Card{
 				{Number: 11, Suit: Clubs},
@@ -91,7 +91,10 @@ func GetSampleGame() *Game {
 			{Number: 2, Suit: Hearts},
 			{Number: 11, Suit: Diamonds},
 		}},
-	}*/
+	}
+}
+
+func GetGame2() *Game {
 	return &Game{
 		Piles: [7]Pile{
 			{BaseCards: []Card{
@@ -120,7 +123,7 @@ func GetSampleGame() *Game {
 				{Number: 13, Suit: Diamonds},
 			}},
 			{BaseCards: []Card{
-				{Number: 8, Suit: Hearts},
+				{Number: 8, Suit: Spades},
 				{Number: 8, Suit: Clubs},
 				{Number: 6, Suit: Clubs},
 				{Number: 10, Suit: Clubs},
