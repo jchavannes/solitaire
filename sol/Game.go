@@ -17,7 +17,7 @@ type Game struct {
 
 const (
 	SourcePile_Deck = 7
-	TargetFile_Foundation = 7
+	TargetPile_Foundation = 7
 )
 
 func (g *Game) FlipPiles() bool {
@@ -294,7 +294,7 @@ func (g *Game) findPileToFoundationMoves() []Move {
 				possibleMoves = append(possibleMoves, Move{
 					SourceCard: sourceCard,
 					SourcePileId: sourcePileId,
-					TargetPileId: TargetFile_Foundation,
+					TargetPileId: TargetPile_Foundation,
 				})
 				break
 			}
@@ -302,7 +302,7 @@ func (g *Game) findPileToFoundationMoves() []Move {
 				possibleMoves = append(possibleMoves, Move{
 					SourceCard: sourceCard,
 					SourcePileId: sourcePileId,
-					TargetPileId: TargetFile_Foundation,
+					TargetPileId: TargetPile_Foundation,
 				})
 				break
 			}
@@ -320,7 +320,7 @@ func (g *Game) findDeckToFoundationMoves() []Move {
 				possibleMoves = append(possibleMoves, Move{
 					SourceCard: currentCard,
 					SourcePileId: SourcePile_Deck,
-					TargetPileId: TargetFile_Foundation,
+					TargetPileId: TargetPile_Foundation,
 				})
 				break
 			}
@@ -331,7 +331,7 @@ func (g *Game) findDeckToFoundationMoves() []Move {
 				possibleMoves = append(possibleMoves, Move{
 					SourceCard: currentCard,
 					SourcePileId: SourcePile_Deck,
-					TargetPileId: TargetFile_Foundation,
+					TargetPileId: TargetPile_Foundation,
 				})
 			}
 		}
@@ -340,7 +340,7 @@ func (g *Game) findDeckToFoundationMoves() []Move {
 }
 
 func (g *Game) MakeMove(m Move) {
-	if m.TargetPileId == TargetFile_Foundation {
+	if m.TargetPileId == TargetPile_Foundation {
 		if m.SourcePileId == SourcePile_Deck {
 			g.moveDeckToFoundation(m)
 		} else {

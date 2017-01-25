@@ -10,18 +10,19 @@ func main() {
 	var bestGames []*sol.Game
 	for i := 0; i < 10000; i++ {
 		game := runGame(rand.Intn(100))
-//		game.OutputGame()
+		//game.OutputGame()
 		if len(bestGames) < 5 {
 			bestGames = append(bestGames, game)
 		} else {
 			for j, bestGame := range bestGames {
-				if !game.IsGameCompleted() && bestGame.IsGameCompleted() {
+				if ! game.IsGameCompleted() && bestGame.IsGameCompleted() {
 					continue
 				}
 				if game.IsGameCompleted() && ! bestGame.IsGameCompleted() {
 					bestGames[j] = game
 					break
 				} else if game.Moves < bestGame.Moves {
+					print(j)
 					bestGames[j] = game
 					break
 				}
@@ -29,6 +30,7 @@ func main() {
 		}
 		//game.OutputGameSimple()
 	}
+	println()
 
 	for _, game := range bestGames {
 		game.OutputGameSimple()
