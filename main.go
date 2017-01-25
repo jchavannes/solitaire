@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/jchavannes/solitaire/sol"
 	"math/rand"
+	"fmt"
 )
 
 func main() {
@@ -22,7 +23,7 @@ func main() {
 					bestGames[j] = game
 					break
 				} else if game.Moves < bestGame.Moves {
-					print(j)
+					fmt.Printf("i: %d, j: %d, game.Moves: %d, game.IsGameCompleted: %t\n", i, j, game.Moves, game.IsGameCompleted())
 					bestGames[j] = game
 					break
 				}
