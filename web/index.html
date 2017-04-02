@@ -1,0 +1,59 @@
+
+<html>
+<head>
+    <title>Solitaire</title>
+
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="res/solitaire.css"/>
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script type="text/javascript" src="res/solitaire.js"></script>
+</head>
+<body>
+
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+            </button>
+            <a class="navbar-brand" href="./"><h1>Solitaire</h1></a>
+        </div>
+    </div>
+</nav>
+
+
+<div class="jumbotron">
+
+    <br/><br/><br/>
+
+    <div class="container">
+        <h3>App for solving solitaire</h3>
+    </div>
+
+    <br/>
+
+    <div class="container">
+        <p><input id="output-game" class="btn btn-success" type="button" value="Output Game" /></p>
+    </div>
+
+    <script type="text/javascript">
+        $(function () {
+            $("#output-game").click(function() {
+                Solitaire.GetGame();
+            });
+        });
+    </script>
+
+</div>
+
+
+<div class="container">
+    <hr>
+    <footer>
+        <p><a href="https://jasonc.me/">Jason C</a> - 2017</p>
+    </footer>
+</div>
+
+</body>
+</html>
