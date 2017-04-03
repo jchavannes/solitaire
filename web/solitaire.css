@@ -85,16 +85,16 @@ footer p {
     background: url(suits.png);
     background-size: 80px 20px;
 }
-.card.heart span,
-.card.diamond span {
+.card.hearts span,
+.card.diamonds span {
     color: red;
 }
-.card.heart .suit {
+.card.hearts .suit {
     background-position: -20px 0;
 }
-.card.club .suit {
+.card.clubs .suit {
     background-position: -40px 0;
 }
-.card.diamond .suit {
+.card.diamonds .suit {
     background-position: -60px 0;
 }

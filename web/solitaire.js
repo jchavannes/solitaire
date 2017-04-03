@@ -20,26 +20,11 @@ $(function () {
             for (i = 0; i < game.Foundations.length; i++) {
                 var foundation = game.Foundations[i];
                 tmpHtml = "";
-                if (!foundation.Cards) {
+                if (foundation.Cards === null) {
                     tmpHtml += Solitaire.Tempalates.Snippets.CardEmpty();
                 } else {
                     for (j = 0; j < foundation.Cards.length; j++) {
                         card = foundation.Cards[j];
-                        var number = card.Number;
-                        switch (number) {
-                            case 1:
-                                card = "A";
-                                break;
-                            case 11:
-                                card = "J";
-                                break;
-                            case 12:
-                                card = "Q";
-                                break;
-                            case 13:
-                                card = "k";
-                                break;
-                        }
                         tmpHtml += Solitaire.Tempalates.Snippets.Card(card);
                     }
                 }
@@ -55,7 +40,7 @@ $(function () {
                 "</div>";
 
             if (game.Deck.Position === 0) {
-                if (game.Deck.Cards) {
+                if (game.Deck.Cards.length > 0) {
                     deckHtml += Solitaire.Tempalates.Snippets.CardFlipped();
                 } else {
                     deckHtml += Solitaire.Tempalates.Snippets.CardEmpty();
@@ -84,18 +69,18 @@ $(function () {
             for (i = 0; i < game.Piles.length; i++) {
                 var pile = game.Piles[i];
                 tmpHtml = "";
-                if (pile.BaseCards) {
+                if (pile.BaseCards.length > 0) {
                     for (j = 0; j < pile.BaseCards.length; j++) {
                         tmpHtml += Solitaire.Tempalates.Snippets.CardFlipped();
                     }
                 }
-                if (pile.StackCards) {
+                if (pile.StackCards.length > 0) {
                     for (j = 0; j < pile.StackCards.length; j++) {
                         card = pile.StackCards[j];
                         tmpHtml += Solitaire.Tempalates.Snippets.Card(card);
                     }
                 }
-                if (!pile.StackCards && !pile.BaseCards) {
+                if (pile.StackCards.length === 0 && pile.BaseCards.length === 0) {
                     tmpHtml += Solitaire.Tempalates.Snippets.CardEmpty();
                 }
                 pilesHtml +=
@@ -117,8 +102,23 @@ $(function () {
              * @return {string}
              */
             Card: function (card) {
+                var number = card.Number;
+                switch (card.Number) {
+                    case 1:
+                        number = "A";
+                        break;
+                    case 11:
+                        number = "J";
+                        break;
+                    case 12:
+                        number = "Q";
+                        break;
+                    case 13:
+                        number = "K";
+                        break;
+                }
                 return "<div class='card " + card.Suit + "'>" +
-                    "<span>" + card + "</span>" +
+                    "<span>" + number + "</span>" +
                     "<div class='suit'></div>" +
                     "</div>";
             },
@@ -150,6 +150,7 @@ $(function () {
                     console.log(e);
                     return;
                 }
+                console.log(game);
                 Solitaire.Tempalates.Game($ele, game);
             },
             error: function (err) {

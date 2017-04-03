@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"github.com/jchavannes/jgo/web"
-	"github.com/jchavannes/solitaire/sol"
+	"math/rand"
 )
 
 var (
@@ -16,7 +16,8 @@ var (
 	gameRoute = web.Route{
 		Pattern: "/game",
 		Handler: func(r *web.Response) {
-			r.WriteJson(sol.GetGame1(), true)
+			game := runGame(rand.Intn(100))
+			r.WriteJson(game, true)
 		},
 	}
 )
