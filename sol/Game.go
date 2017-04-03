@@ -170,11 +170,11 @@ func (g *Game) FindPossibleMoves() []Move {
 
 	possibleMoves = append(possibleMoves, g.findPileToPileMoves()...)
 	if len(possibleMoves) == 0 {
-		possibleMoves = append(possibleMoves, g.findDeckToPileMoves()...)
+		possibleMoves = append(possibleMoves, g.findDeckToFoundationMoves()...)
 
 		possibleMoves = append(possibleMoves, g.findPileToFoundationMoves()...)
 		if len(possibleMoves) == 0 {
-			possibleMoves = append(possibleMoves, g.findDeckToFoundationMoves()...)
+			possibleMoves = append(possibleMoves, g.findDeckToPileMoves()...)
 			if len(possibleMoves) == 0 && rand.Intn(100) < 20 {
 				if g.RecentSubCard {
 					g.RecentSubCard = false

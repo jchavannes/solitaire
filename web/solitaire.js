@@ -17,6 +17,8 @@ $(function () {
             var pilesHtml = "";
             var tmpHtml = "";
 
+            console.log("Moves: " + game.Moves + ", Position: " + game.Deck.Position + ", Size: " + game.Deck.Cards.length);
+
             for (i = 0; i < game.Foundations.length; i++) {
                 var foundation = game.Foundations[i];
                 tmpHtml = "";
@@ -50,8 +52,12 @@ $(function () {
                 if (startCard < 0) {
                     startCard = 0;
                 }
-                if (startCard > 0) {
-                    deckHtml += Solitaire.Tempalates.Snippets.CardDeck();
+                if (game.Deck.Position > 0) {
+                    if (game.Deck.Position === game.Deck.Cards.length) {
+                        deckHtml += Solitaire.Tempalates.Snippets.CardEmptyDeck();
+                    } else {
+                        deckHtml += Solitaire.Tempalates.Snippets.CardDeck();
+                    }
                 }
                 for (i = startCard; i < game.Deck.Position; i++) {
                     card = game.Deck.Cards[i];
@@ -131,6 +137,12 @@ $(function () {
             /**
              * @return {string}
              */
+            CardEmptyDeck: function () {
+                return "<div class='card empty-deck'></div>";
+            },
+            /**
+             * @return {string}
+             */
             CardFlipped: function () {
                 return "<div class='card flipped'></div>";
             },
@@ -156,7 +168,6 @@ $(function () {
                     console.log(e);
                     return;
                 }
-                console.log(game);
                 Solitaire.Tempalates.Game($ele, game);
             },
             error: function (err) {
@@ -172,6 +183,7 @@ $(function () {
  *   Foundations: []Foundation
  *   Deck: Deck
  *   Piles: []Pile
+ *   Moves: int
  * }} Game
  */
 
