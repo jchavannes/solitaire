@@ -71,6 +71,10 @@ footer p {
 .card.empty {
     background: none;
 }
+.card.deck {
+    background: #44b;
+    margin-bottom: 10px;
+}
 .card span {
     font-size: 24px;
     display: inline-block;

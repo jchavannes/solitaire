@@ -33,19 +33,21 @@
     <br/>
 
     <div class="container">
-        <div id="solitaire-game" class="board"></div>
+        <p><input id="output-game" class="btn btn-success" type="button" value="Output Game" /></p>
     </div>
 
     <br/>
 
     <div class="container">
-        <p><input id="output-game" class="btn btn-success" type="button" value="Output Game" /></p>
+        <div id="solitaire-game" class="board"></div>
     </div>
 
     <script type="text/javascript">
         $(function () {
-            Solitaire.GetGame($("#solitaire-game"));
+            var $game = $("#solitaire-game");
+            Solitaire.GetGame($game);
             $("#output-game").click(function() {
+                Solitaire.GetGame($game);
             });
         });
     </script>

@@ -51,11 +51,11 @@ $(function () {
                     startCard = 0;
                 }
                 if (startCard > 0) {
-                    deckHtml += Solitaire.Tempalates.Snippets.CardFlipped();
+                    deckHtml += Solitaire.Tempalates.Snippets.CardDeck();
                 }
                 for (i = startCard; i < game.Deck.Position; i++) {
                     card = game.Deck.Cards[i];
-                    deckHtml = Solitaire.Tempalates.Snippets.Card(card);
+                    deckHtml += Solitaire.Tempalates.Snippets.Card(card);
                 }
             }
             deckHtml =
@@ -133,6 +133,12 @@ $(function () {
              */
             CardFlipped: function () {
                 return "<div class='card flipped'></div>";
+            },
+            /**
+             * @return {string}
+             */
+            CardDeck: function () {
+                return "<div class='card deck'></div>";
             }
         }
     };
