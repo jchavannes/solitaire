@@ -39,7 +39,7 @@ var game *sol.Game
 
 func getNextMove() *sol.Game {
 	if game == nil {
-		game = sol.GetGame2()
+		game = sol.GetGame1()
 		game.FlipPiles()
 	}
 
