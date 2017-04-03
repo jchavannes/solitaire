@@ -22,7 +22,6 @@
     </div>
 </nav>
 
-
 <div class="jumbotron">
 
     <br/><br/><br/>
@@ -34,13 +33,19 @@
     <br/>
 
     <div class="container">
+        <div id="solitaire-game" class="board"></div>
+    </div>
+
+    <br/>
+
+    <div class="container">
         <p><input id="output-game" class="btn btn-success" type="button" value="Output Game" /></p>
     </div>
 
     <script type="text/javascript">
         $(function () {
+            Solitaire.GetGame($("#solitaire-game"));
             $("#output-game").click(function() {
-                Solitaire.GetGame();
             });
         });
     </script>

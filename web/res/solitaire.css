@@ -28,3 +28,73 @@
 footer p {
     text-align: right;
 }
+
+.board {
+    padding: 1px;
+    background: #090;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.group {
+    vertical-align: top;
+    text-align: left;
+    display: inline-block;
+    margin: 10px;
+    padding: 5px;
+    box-shadow: 1px 1px 10px rgba(0,0,0,1);
+    border-radius: 10px;
+}
+.group h4 {
+    color: #fff;
+    padding-left: 10px;
+}
+.board .pile {
+    vertical-align: top;
+    display: inline-block;
+    margin: 5px;
+    padding-bottom: 50px;
+}
+
+.card {
+    margin-bottom: -50px;
+    padding: 1px;
+    width: 68px;
+    height: 88px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 1px 1px 5px rgba(0,0,0,1);
+}
+.card.flipped {
+    background: #44b;
+}
+.card.empty {
+    background: none;
+}
+.card span {
+    font-size: 24px;
+    display: inline-block;
+    margin-left: 10px;
+    margin-top: 5px;
+}
+.card .suit {
+    display: inline-block;
+    margin-top: 5px;
+    width: 20px;
+    height: 20px;
+    background: url(suits.png);
+    background-size: 80px 20px;
+}
+.card.heart span,
+.card.diamond span {
+    color: red;
+}
+.card.heart .suit {
+    background-position: -20px 0;
+}
+.card.club .suit {
+    background-position: -40px 0;
+}
+.card.diamond .suit {
+    background-position: -60px 0;
+}
