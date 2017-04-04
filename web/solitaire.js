@@ -45,7 +45,7 @@ $(function () {
             if (game.Deck.Position === 0) {
                 if (game.Deck.Cards.length > 0) {
                     card = game.Deck.Cards[0];
-                    deckHtml += Solitaire.Tempalates.Snippets.CardFlippedTransparent(card);
+                    deckHtml += Solitaire.Tempalates.Snippets.CardFlipped(card);
                 } else {
                     deckHtml += Solitaire.Tempalates.Snippets.CardEmpty();
                 }
@@ -59,7 +59,7 @@ $(function () {
                         deckHtml += Solitaire.Tempalates.Snippets.CardEmptyDeck();
                     } else {
                         card = game.Deck.Cards[game.Deck.Position];
-                        deckHtml += Solitaire.Tempalates.Snippets.CardFlippedTransparent(card);
+                        deckHtml += Solitaire.Tempalates.Snippets.CardFlippedDeck(card);
                     }
                 }
                 for (i = startCard; i < game.Deck.Position; i++) {
@@ -81,7 +81,7 @@ $(function () {
                 if (pile.BaseCards.length > 0) {
                     for (j = pile.BaseCards.length - 1; j >= 0; j--) {
                         card = pile.BaseCards[j];
-                        tmpHtml += Solitaire.Tempalates.Snippets.CardFlippedTransparent(card);
+                        tmpHtml += Solitaire.Tempalates.Snippets.CardFlipped(card);
                     }
                 }
                 if (pile.StackCards.length > 0) {
@@ -131,16 +131,21 @@ $(function () {
                 return "<div class='card empty-deck'></div>";
             },
             /**
+             * @param {Card} card
              * @return {string}
              */
-            CardFlipped: function () {
-                return "<div class='card flipped'></div>";
+            CardFlippedDeck: function (card) {
+                var number = GetCardLetter(card.Number);
+                return "<div class='card flipped-deck " + card.Suit + "'>" +
+                    "<span>" + number + "</span>" +
+                    "<div class='suit'></div>" +
+                    "</div>";
             },
             /**
              * @param {Card} card
              * @return {string}
              */
-            CardFlippedTransparent: function (card) {
+            CardFlipped: function (card) {
                 var number = GetCardLetter(card.Number);
                 return "<div class='card flipped " + card.Suit + "'>" +
                     "<span>" + number + "</span>" +

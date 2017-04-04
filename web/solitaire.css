@@ -68,6 +68,10 @@ footer p {
 .card.flipped {
     background: #99e;
 }
+.card.flipped-deck {
+    background: #99e;
+    margin-bottom: 10px;
+}
 .card.empty {
     background: none;
 }
