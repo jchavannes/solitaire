@@ -270,7 +270,7 @@ func (g *Game) findDeckToPileMoves() []Move {
 	currentCard, err := g.Deck.GetCurrentCard()
 	if err == nil {
 		for targetPileId, targetPile := range g.Piles {
-			if targetPile.CanMoveCardToPile(currentCard) {
+			if targetPileId != SourcePile_Deck && targetPile.CanMoveCardToPile(currentCard) {
 				possibleMoves = append(possibleMoves, Move{
 					SourceCard: currentCard,
 					SourcePileId: SourcePile_Deck,
@@ -390,6 +390,8 @@ func (g *Game) moveDeckToPile(m Move) {
 		return
 	}
 	g.Piles[m.TargetPileId].StackCards = append(g.Piles[m.TargetPileId].StackCards, currentCard)
+	println("moveDeckToPile")
+	fmt.Printf("Move: %#v\n", m)
 	g.Deck.PlayCurrentCard()
 	g.Moves++
 }
@@ -434,6 +436,7 @@ func (g *Game) moveDeckToFoundation(m Move) {
 			continue
 		}
 		g.Foundations[foundationId].Cards = append(g.Foundations[foundationId].Cards, currentCard)
+		println("moveDeckToFoundation")
 		g.Deck.PlayCurrentCard()
 		g.Moves++
 		break

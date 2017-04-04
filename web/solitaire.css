@@ -66,13 +66,13 @@ footer p {
     box-shadow: 1px 1px 5px rgba(0,0,0,1);
 }
 .card.flipped {
-    background: #44b;
+    background: #99e;
 }
 .card.empty {
     background: none;
 }
 .card.deck {
-    background: #44b;
+    background: #99e;
     margin-bottom: 10px;
 }
 .card.empty-deck {

@@ -20,6 +20,23 @@ var (
 			r.WriteJson(game, true)
 		},
 	}
+
+	resetRoute = web.Route{
+		Pattern: "/reset",
+		Handler: func(r *web.Response) {
+			game := reset()
+			r.WriteJson(game, true)
+		},
+	}
+
+	fullGameRoute = web.Route{
+		Pattern: "/full-game",
+		Handler: func(r *web.Response) {
+			fullGame := sol.FullGame{}
+			fullGame.Generate(*reset())
+			r.WriteJson(fullGame, true)
+		},
+	}
 )
 
 func runWeb() error {
@@ -30,6 +47,8 @@ func runWeb() error {
 		Routes: []web.Route{
 			indexRoute,
 			gameRoute,
+			resetRoute,
+			fullGameRoute,
 		},
 	}
 	return server.Run()
@@ -37,9 +56,16 @@ func runWeb() error {
 
 var game *sol.Game
 
+func reset() *sol.Game {
+	game = sol.GetGame2()
+	game.FlipPiles()
+
+	return game
+}
+
 func getNextMove() *sol.Game {
 	if game == nil {
-		game = sol.GetGame1()
+		game = sol.GetGame2()
 		game.FlipPiles()
 	}
 

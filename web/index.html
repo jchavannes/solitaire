@@ -32,7 +32,10 @@
     <br/>
 
     <div class="container">
-        <p><input id="output-game" class="btn btn-success" type="button" value="Output Game" /></p>
+        <p>
+            <input id="output-game" class="btn btn-primary" type="button" value="Next Move" />
+            <input id="reset-game" class="btn btn-warning" type="button" value="Reset" />
+        </p>
     </div>
 
     <br/>
@@ -47,6 +50,9 @@
             Solitaire.GetGame($game);
             $("#output-game").click(function() {
                 Solitaire.GetGame($game);
+            });
+            $("#reset-game").click(function() {
+                Solitaire.ResetGame($game);
             });
         });
     </script>

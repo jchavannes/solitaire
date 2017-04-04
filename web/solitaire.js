@@ -3,6 +3,7 @@ $(function () {
 
     Solitaire.URL = {
         Game: "game",
+        Reset: "reset"
     };
 
     Solitaire.Tempalates = {
@@ -43,7 +44,8 @@ $(function () {
 
             if (game.Deck.Position === 0) {
                 if (game.Deck.Cards.length > 0) {
-                    deckHtml += Solitaire.Tempalates.Snippets.CardFlipped();
+                    card = game.Deck.Cards[0];
+                    deckHtml += Solitaire.Tempalates.Snippets.CardFlippedTransparent(card);
                 } else {
                     deckHtml += Solitaire.Tempalates.Snippets.CardEmpty();
                 }
@@ -56,7 +58,8 @@ $(function () {
                     if (game.Deck.Position === game.Deck.Cards.length) {
                         deckHtml += Solitaire.Tempalates.Snippets.CardEmptyDeck();
                     } else {
-                        deckHtml += Solitaire.Tempalates.Snippets.CardDeck();
+                        card = game.Deck.Cards[game.Deck.Position];
+                        deckHtml += Solitaire.Tempalates.Snippets.CardFlippedTransparent(card);
                     }
                 }
                 for (i = startCard; i < game.Deck.Position; i++) {
@@ -76,8 +79,9 @@ $(function () {
                 var pile = game.Piles[i];
                 tmpHtml = "";
                 if (pile.BaseCards.length > 0) {
-                    for (j = 0; j < pile.BaseCards.length; j++) {
-                        tmpHtml += Solitaire.Tempalates.Snippets.CardFlipped();
+                    for (j = pile.BaseCards.length - 1; j >= 0; j--) {
+                        card = pile.BaseCards[j];
+                        tmpHtml += Solitaire.Tempalates.Snippets.CardFlippedTransparent(card);
                     }
                 }
                 if (pile.StackCards.length > 0) {
@@ -108,21 +112,7 @@ $(function () {
              * @return {string}
              */
             Card: function (card) {
-                var number = card.Number;
-                switch (card.Number) {
-                    case 1:
-                        number = "A";
-                        break;
-                    case 11:
-                        number = "J";
-                        break;
-                    case 12:
-                        number = "Q";
-                        break;
-                    case 13:
-                        number = "K";
-                        break;
-                }
+                var number = GetCardLetter(card.Number);
                 return "<div class='card " + card.Suit + "'>" +
                     "<span>" + number + "</span>" +
                     "<div class='suit'></div>" +
@@ -147,6 +137,17 @@ $(function () {
                 return "<div class='card flipped'></div>";
             },
             /**
+             * @param {Card} card
+             * @return {string}
+             */
+            CardFlippedTransparent: function (card) {
+                var number = GetCardLetter(card.Number);
+                return "<div class='card flipped " + card.Suit + "'>" +
+                    "<span>" + number + "</span>" +
+                    "<div class='suit'></div>" +
+                    "</div>";
+            },
+            /**
              * @return {string}
              */
             CardDeck: function () {
@@ -154,6 +155,29 @@ $(function () {
             }
         }
     };
+
+    /**
+     * @param {int} cardNumber
+     * @return {string}
+     */
+    function GetCardLetter(cardNumber) {
+        var number = "" + cardNumber;
+        switch (cardNumber) {
+            case 1:
+                number = "A";
+                break;
+            case 11:
+                number = "J";
+                break;
+            case 12:
+                number = "Q";
+                break;
+            case 13:
+                number = "K";
+                break;
+        }
+        return number;
+    }
 
     /**
      * @param {jQuery} $ele
@@ -173,7 +197,32 @@ $(function () {
             error: function (err) {
                 console.log(err);
             }
-        })
+        });
+    };
+
+    /**
+     * @param {jQuery} $ele
+     */
+    Solitaire.ResetGame = function($ele) {
+        $.ajax({
+            url: Solitaire.URL.Reset,
+            success: function (data) {
+                try {
+                    var game = JSON.parse(data);
+                } catch (e) {
+                    console.log(e);
+                    return;
+                }
+                for (var i = 0; i < game.Deck.Cards.length; i++) {
+                    var card = game.Deck.Cards[i];
+                    console.log(GetCardLetter(card.Number) + " " + card.Suit);
+                }
+                Solitaire.Tempalates.Game($ele, game);
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
     };
 
 });

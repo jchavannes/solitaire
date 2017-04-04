@@ -118,14 +118,14 @@ func GetGame2() *Game {
 			{BaseCards: []Card{
 				{Number: 9, Suit: Spades},
 				{Number: 9, Suit: Clubs},
+				{Number: 6, Suit: Clubs},
 				{Number: 7, Suit: Clubs},
-				{Number: 8, Suit: Diamonds},
 				{Number: 13, Suit: Diamonds},
 			}},
 			{BaseCards: []Card{
 				{Number: 8, Suit: Spades},
 				{Number: 8, Suit: Clubs},
-				{Number: 6, Suit: Clubs},
+				{Number: 8, Suit: Diamonds},
 				{Number: 10, Suit: Clubs},
 				{Number: 4, Suit: Diamonds},
 				{Number: 6, Suit: Spades},
