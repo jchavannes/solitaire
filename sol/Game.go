@@ -16,8 +16,8 @@ type Game struct {
 }
 
 const (
-	SourcePile_Deck = 7
-	TargetPile_Foundation = 7
+	PileDeck = 7
+	PileFoundation = 8
 )
 
 func (g *Game) FlipPiles() bool {
@@ -270,10 +270,10 @@ func (g *Game) findDeckToPileMoves() []Move {
 	currentCard, err := g.Deck.GetCurrentCard()
 	if err == nil {
 		for targetPileId, targetPile := range g.Piles {
-			if targetPileId != SourcePile_Deck && targetPile.CanMoveCardToPile(currentCard) {
+			if targetPileId != PileDeck && targetPile.CanMoveCardToPile(currentCard) {
 				possibleMoves = append(possibleMoves, Move{
 					SourceCard: currentCard,
-					SourcePileId: SourcePile_Deck,
+					SourcePileId: PileDeck,
 					TargetPileId: targetPileId,
 				})
 			}
@@ -294,7 +294,7 @@ func (g *Game) findPileToFoundationMoves() []Move {
 				possibleMoves = append(possibleMoves, Move{
 					SourceCard: sourceCard,
 					SourcePileId: sourcePileId,
-					TargetPileId: TargetPile_Foundation,
+					TargetPileId: PileFoundation,
 				})
 				break
 			}
@@ -302,7 +302,7 @@ func (g *Game) findPileToFoundationMoves() []Move {
 				possibleMoves = append(possibleMoves, Move{
 					SourceCard: sourceCard,
 					SourcePileId: sourcePileId,
-					TargetPileId: TargetPile_Foundation,
+					TargetPileId: PileFoundation,
 				})
 				break
 			}
@@ -319,8 +319,8 @@ func (g *Game) findDeckToFoundationMoves() []Move {
 			if len(foundation.Cards) == 0 && currentCard.Number == 1 {
 				possibleMoves = append(possibleMoves, Move{
 					SourceCard: currentCard,
-					SourcePileId: SourcePile_Deck,
-					TargetPileId: TargetPile_Foundation,
+					SourcePileId: PileDeck,
+					TargetPileId: PileFoundation,
 				})
 				break
 			}
@@ -330,8 +330,8 @@ func (g *Game) findDeckToFoundationMoves() []Move {
 			if foundation.Cards[len(foundation.Cards) - 1].Number == currentCard.Number - 1 {
 				possibleMoves = append(possibleMoves, Move{
 					SourceCard: currentCard,
-					SourcePileId: SourcePile_Deck,
-					TargetPileId: TargetPile_Foundation,
+					SourcePileId: PileDeck,
+					TargetPileId: PileFoundation,
 				})
 			}
 		}
@@ -340,13 +340,13 @@ func (g *Game) findDeckToFoundationMoves() []Move {
 }
 
 func (g *Game) MakeMove(m Move) {
-	if m.TargetPileId == TargetPile_Foundation {
-		if m.SourcePileId == SourcePile_Deck {
+	if m.TargetPileId == PileFoundation {
+		if m.SourcePileId == PileDeck {
 			g.moveDeckToFoundation(m)
 		} else {
 			g.movePileToFoundation(m)
 		}
-	} else if m.SourcePileId == SourcePile_Deck {
+	} else if m.SourcePileId == PileDeck {
 		g.moveDeckToPile(m)
 		return
 	} else {

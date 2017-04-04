@@ -3,25 +3,21 @@ $(function () {
 
     Solitaire.URL = {
         Game: "game",
+        FullGame: "full-game",
         Reset: "reset"
     };
 
     Solitaire.Tempalates = {
         /**
-         * @param {jQuery} $ele
-         * @param {Game} game
+         * @param {[Foundation]} foundations
+         * @return {string}
          */
-        Game: function ($ele, game) {
-            var i, j, card;
+        FoundationsHtml: function (foundations) {
             var foundationsHtml = "";
-            var deckHtml = "";
-            var pilesHtml = "";
             var tmpHtml = "";
-
-            console.log("Moves: " + game.Moves + ", Position: " + game.Deck.Position + ", Size: " + game.Deck.Cards.length);
-
-            for (i = 0; i < game.Foundations.length; i++) {
-                var foundation = game.Foundations[i];
+            var card, i;
+            for (i = 0; i < foundations.length; i++) {
+                var foundation = foundations[i];
                 tmpHtml = "";
                 if (foundation.Cards === null) {
                     tmpHtml += Solitaire.Tempalates.Snippets.CardEmpty();
@@ -41,29 +37,37 @@ $(function () {
                 "<h4>Foundations</h4>" +
                 foundationsHtml +
                 "</div>";
-
-            if (game.Deck.Position === 0) {
-                if (game.Deck.Cards.length > 0) {
-                    card = game.Deck.Cards[0];
+            return foundationsHtml;
+        },
+        /**
+         * @param {Deck} deck
+         * @return {string}
+         */
+        DeckHtml: function (deck) {
+            var deckHtml = "";
+            var card, i;
+            if (deck.Position === 0) {
+                if (deck.Cards.length > 0) {
+                    card = deck.Cards[0];
                     deckHtml += Solitaire.Tempalates.Snippets.CardFlipped(card);
                 } else {
                     deckHtml += Solitaire.Tempalates.Snippets.CardEmpty();
                 }
             } else {
-                var startCard = game.Deck.Position - 3;
+                var startCard = deck.Position - 3;
                 if (startCard < 0) {
                     startCard = 0;
                 }
-                if (game.Deck.Position > 0) {
-                    if (game.Deck.Position === game.Deck.Cards.length) {
+                if (deck.Position > 0) {
+                    if (deck.Position === deck.Cards.length) {
                         deckHtml += Solitaire.Tempalates.Snippets.CardEmptyDeck();
                     } else {
-                        card = game.Deck.Cards[game.Deck.Position];
+                        card = deck.Cards[deck.Position];
                         deckHtml += Solitaire.Tempalates.Snippets.CardFlippedDeck(card);
                     }
                 }
-                for (i = startCard; i < game.Deck.Position; i++) {
-                    card = game.Deck.Cards[i];
+                for (i = startCard; i < deck.Position; i++) {
+                    card = deck.Cards[i];
                     deckHtml += Solitaire.Tempalates.Snippets.Card(card);
                 }
             }
@@ -74,9 +78,18 @@ $(function () {
                 deckHtml +
                 "</div>" +
                 "</div>";
-
-            for (i = 0; i < game.Piles.length; i++) {
-                var pile = game.Piles[i];
+            return deckHtml;
+        },
+        /**
+         * @param {[Pile]} piles
+         * @return {string}
+         */
+        PilesHtml: function (piles) {
+            var pilesHtml = "";
+            var tmpHtml = "";
+            var card, i, j;
+            for (i = 0; i < piles.length; i++) {
+                var pile = piles[i];
                 tmpHtml = "";
                 if (pile.BaseCards.length > 0) {
                     for (j = pile.BaseCards.length - 1; j >= 0; j--) {
@@ -103,6 +116,18 @@ $(function () {
                 "<h4>Piles</h4>" +
                 pilesHtml +
                 "</div>";
+            return pilesHtml;
+        },
+        /**
+         * @param {jQuery} $ele
+         * @param {Game} game
+         */
+        Game: function ($ele, game) {
+            console.log("Moves: " + game.Moves + ", Position: " + game.Deck.Position + ", Size: " + game.Deck.Cards.length);
+
+            var foundationsHtml = Solitaire.Tempalates.FoundationsHtml(game.Foundations);
+            var deckHtml = Solitaire.Tempalates.DeckHtml(game.Deck);
+            var pilesHtml = Solitaire.Tempalates.PilesHtml(game.Piles);
 
             $ele.html(foundationsHtml + deckHtml + pilesHtml);
         },
@@ -151,12 +176,6 @@ $(function () {
                     "<span>" + number + "</span>" +
                     "<div class='suit'></div>" +
                     "</div>";
-            },
-            /**
-             * @return {string}
-             */
-            CardDeck: function () {
-                return "<div class='card deck'></div>";
             }
         }
     };
@@ -184,12 +203,89 @@ $(function () {
         return number;
     }
 
+    var PileDeck = 7;
+    var PileFoundation = 8;
+
+    /** @type {FullGame} CurrentFullGame **/
+    var CurrentFullGame;
+    /** @type {Game} CurrentGame **/
+    var CurrentGame;
+    /** @type {int} CurrentMove **/
+    var CurrentMove;
+    Solitaire.FullGame = {
+        /**
+         * @param {jQuery} $ele
+         * @param {Game} game
+         */
+        SetGame: function ($ele, game) {
+            CurrentFullGame = game;
+            //console.log(game);
+            /**
+             * @type {Game}
+             */
+            CurrentGame = {
+                Foundations: [
+                    { Cards: null, Suit: null },
+                    { Cards: null, Suit: null },
+                    { Cards: null, Suit: null },
+                    { Cards: null, Suit: null }
+                ],
+                Deck: game.Deck,
+                Piles: game.Piles
+            };
+            CurrentMove = 0;
+            Solitaire.Tempalates.Game($ele, CurrentGame);
+        },
+        /**
+         * @param {jQuery} $ele
+         */
+        NextMove: function($ele) {
+            var move = CurrentFullGame.Moves[CurrentMove];
+            console.log(move);
+            var card, i;
+            if (move.SourcePileId == PileDeck) {
+                if (move.TargetPileId == PileDeck) {
+                    CurrentGame.Deck.Position++;
+                    if (CurrentGame.Deck.Position > CurrentGame.Deck.Cards.length) {
+                        CurrentGame.Deck.Position = 0;
+                    }
+                } else {
+                    card = CurrentGame.Deck.Cards.splice(CurrentGame.Deck.Position - 1, 1)[0];
+                    if (move.TargetPileId == PileFoundation) {
+                        for (i = 0; i < CurrentGame.Foundations.length; i++) {
+                            if (CurrentGame.Foundations[i].Suit == "" || CurrentGame.Foundations[i].Suit == card.Suit) {
+                                CurrentGame.Foundations[i].Cards.push(card);
+                                break;
+                            }
+                        }
+                    } else {
+                        CurrentGame.Piles[move.TargetPileId].StackCards.push(card);
+                    }
+                }
+            } else {
+                card = CurrentGame.Piles[move.SourcePileId].StackCards.splice(CurrentGame.Piles[move.SourcePileId].StackCards.length - 1, 1)[0];
+                if (move.TargetPileId == PileFoundation) {
+                    for (i = 0; i < CurrentGame.Foundations.length; i++) {
+                        if (CurrentGame.Foundations[i].Suit == "" || CurrentGame.Foundations[i].Suit == card.Suit) {
+                            CurrentGame.Foundations[i].Cards.push(card);
+                            break;
+                        }
+                    }
+                } else {
+                    CurrentGame.Piles[move.TargetPileId].StackCards.push(card);
+                }
+            }
+            Solitaire.Tempalates.Game($ele, CurrentGame);
+            CurrentMove++;
+        }
+    };
+
     /**
      * @param {jQuery} $ele
      */
     Solitaire.GetGame = function ($ele) {
         $.ajax({
-            url: Solitaire.URL.Game,
+            url: Solitaire.URL.FullGame,
             success: function (data) {
                 try {
                     var game = JSON.parse(data);
@@ -197,7 +293,7 @@ $(function () {
                     console.log(e);
                     return;
                 }
-                Solitaire.Tempalates.Game($ele, game);
+                Solitaire.FullGame.SetGame($ele, game);
             },
             error: function (err) {
                 console.log(err);
@@ -208,7 +304,14 @@ $(function () {
     /**
      * @param {jQuery} $ele
      */
-    Solitaire.ResetGame = function($ele) {
+    Solitaire.NextMove = function ($ele) {
+        Solitaire.FullGame.NextMove($ele);
+    };
+
+    /**
+     * @param {jQuery} $ele
+     */
+    Solitaire.ResetGame = function ($ele) {
         $.ajax({
             url: Solitaire.URL.Reset,
             success: function (data) {
@@ -231,6 +334,24 @@ $(function () {
     };
 
 });
+
+/**
+ * @typedef {{
+ *   Deck: Deck
+ *   Piles: []Pile
+ *   Moves: []Move
+ *   Won: bool
+ * }} FullGame
+ */
+
+/**
+ * @typedef {{
+ *   SourceCard: Card
+ *   TargetCard: Card
+ *   SourcePileId: int
+ *   TargetPileId: int
+ * }} Move
+ */
 
 /**
  * @typedef {{

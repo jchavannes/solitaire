@@ -33,7 +33,8 @@
 
     <div class="container">
         <p>
-            <input id="output-game" class="btn btn-primary" type="button" value="Next Move" />
+            <input id="next-move" class="btn btn-primary" type="button" value="Next Move" />
+            <input id="get-game" class="btn btn-primary" type="button" value="Get Game" />
             <input id="reset-game" class="btn btn-warning" type="button" value="Reset" />
         </p>
     </div>
@@ -48,7 +49,10 @@
         $(function () {
             var $game = $("#solitaire-game");
             Solitaire.GetGame($game);
-            $("#output-game").click(function() {
+            $("#next-move").click(function() {
+                Solitaire.NextMove($game);
+            });
+            $("#get-game").click(function() {
                 Solitaire.GetGame($game);
             });
             $("#reset-game").click(function() {
