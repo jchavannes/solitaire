@@ -244,7 +244,7 @@ $(function () {
         NextMove: function($ele) {
             var move = CurrentFullGame.Moves[CurrentMove];
             console.log(move);
-            var card, i;
+            var card, cards, i;
             if (move.SourcePileId === PileDeck) {
                 if (move.TargetPileId === PileDeck) {
                     CurrentGame.Deck.Position++;
@@ -253,10 +253,15 @@ $(function () {
                     }
                 } else {
                     card = CurrentGame.Deck.Cards.splice(CurrentGame.Deck.Position - 1, 1)[0];
+                    CurrentGame.Deck.Position--;
                     if (move.TargetPileId === PileFoundation) {
                         for (i = 0; i < CurrentGame.Foundations.length; i++) {
-                            if (CurrentGame.Foundations[i].Suit === "" || CurrentGame.Foundations[i].Suit === card.Suit) {
+                            if (CurrentGame.Foundations[i].Suit === null || CurrentGame.Foundations[i].Suit === card.Suit) {
+                                if (CurrentGame.Foundations[i].Cards === null) {
+                                    CurrentGame.Foundations[i].Cards = [];
+                                }
                                 CurrentGame.Foundations[i].Cards.push(card);
+                                CurrentGame.Foundations[i].Suit = card.Suit;
                                 break;
                             }
                         }
@@ -265,16 +270,26 @@ $(function () {
                     }
                 }
             } else {
-                card = CurrentGame.Piles[move.SourcePileId].StackCards.splice(CurrentGame.Piles[move.SourcePileId].StackCards.length - 1, 1)[0];
+                cards = CurrentGame.Piles[move.SourcePileId].StackCards.splice(0, CurrentGame.Piles[move.SourcePileId].StackCards.length);
                 if (move.TargetPileId === PileFoundation) {
                     for (i = 0; i < CurrentGame.Foundations.length; i++) {
-                        if (CurrentGame.Foundations[i].Suit === "" || CurrentGame.Foundations[i].Suit === card.Suit) {
-                            CurrentGame.Foundations[i].Cards.push(card);
+                        if (CurrentGame.Foundations[i].Suit === null || CurrentGame.Foundations[i].Suit === cards[0].Suit) {
+                            if (CurrentGame.Foundations[i].Cards === null) {
+                                CurrentGame.Foundations[i].Cards = [];
+                            }
+                            CurrentGame.Foundations[i].Cards.push(cards[0]);
+                            CurrentGame.Foundations[i].Suit = cards[0].Suit;
                             break;
                         }
                     }
                 } else {
-                    CurrentGame.Piles[move.TargetPileId].StackCards.push(card);
+                    for (i = 0; i < cards.length; i++) {
+                        CurrentGame.Piles[move.TargetPileId].StackCards.push(cards[i]);
+                    }
+                }
+                if (CurrentGame.Piles[move.SourcePileId].BaseCards && CurrentGame.Piles[move.SourcePileId].BaseCards.length > 0) {
+                    card = CurrentGame.Piles[move.SourcePileId].BaseCards.splice(0, 1)[0];
+                    CurrentGame.Piles[move.SourcePileId].StackCards.push(card);
                 }
             }
             Solitaire.Tempalates.Game($ele, CurrentGame);

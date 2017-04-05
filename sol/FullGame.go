@@ -21,6 +21,15 @@ func (g *FullGame) Generate(game Game) {
 	}
 
 	for i := 0; i < 500; i++ {
+		if game.Deck.Position == 0 && len(game.Deck.Cards) > 0 {
+			game.Deck.NextCard()
+			game.Moves++
+			g.Moves = append(g.Moves, Move{
+				SourcePileId: PileDeck,
+				TargetPileId: PileDeck,
+				SourceCard: game.Deck.Cards[0],
+			})
+		}
 		moves := game.FindPossibleMoves()
 		g.Moves = append(g.Moves, moves...)
 		for _, move := range moves {
