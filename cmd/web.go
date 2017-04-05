@@ -32,8 +32,9 @@ var (
 	fullGameRoute = web.Route{
 		Pattern: "/full-game",
 		Handler: func(r *web.Response) {
+			game := reset()
 			fullGame := sol.FullGame{}
-			fullGame.Generate(*reset())
+			fullGame.Generate(*game)
 			r.WriteJson(fullGame, true)
 		},
 	}

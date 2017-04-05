@@ -16,7 +16,6 @@ func (d *Deck) GetCurrentCard() (Card, error) {
 
 func (d *Deck) PlayCurrentCard() {
 	d.Cards = append(d.Cards[:d.Position - 1], d.Cards[d.Position:]...)
-	println("Playing currenet card...")
 	d.Position--
 }
 

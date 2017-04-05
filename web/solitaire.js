@@ -91,19 +91,21 @@ $(function () {
             for (i = 0; i < piles.length; i++) {
                 var pile = piles[i];
                 tmpHtml = "";
-                if (pile.BaseCards.length > 0) {
+                var hasBaseCards = pile.BaseCards && pile.BaseCards.length > 0;
+                var hasStackCards = pile.StackCards && pile.StackCards.length > 0;
+                if (hasBaseCards) {
                     for (j = pile.BaseCards.length - 1; j >= 0; j--) {
                         card = pile.BaseCards[j];
                         tmpHtml += Solitaire.Tempalates.Snippets.CardFlipped(card);
                     }
                 }
-                if (pile.StackCards.length > 0) {
+                if (hasStackCards) {
                     for (j = 0; j < pile.StackCards.length; j++) {
                         card = pile.StackCards[j];
                         tmpHtml += Solitaire.Tempalates.Snippets.Card(card);
                     }
                 }
-                if (pile.StackCards.length === 0 && pile.BaseCards.length === 0) {
+                if (!hasBaseCards && !hasStackCards) {
                     tmpHtml += Solitaire.Tempalates.Snippets.CardEmpty();
                 }
                 pilesHtml +=
@@ -123,7 +125,7 @@ $(function () {
          * @param {Game} game
          */
         Game: function ($ele, game) {
-            console.log("Moves: " + game.Moves + ", Position: " + game.Deck.Position + ", Size: " + game.Deck.Cards.length);
+            //console.log("Moves: " + game.Moves + ", Position: " + game.Deck.Position + ", Size: " + game.Deck.Cards.length);
 
             var foundationsHtml = Solitaire.Tempalates.FoundationsHtml(game.Foundations);
             var deckHtml = Solitaire.Tempalates.DeckHtml(game.Deck);
@@ -243,17 +245,17 @@ $(function () {
             var move = CurrentFullGame.Moves[CurrentMove];
             console.log(move);
             var card, i;
-            if (move.SourcePileId == PileDeck) {
-                if (move.TargetPileId == PileDeck) {
+            if (move.SourcePileId === PileDeck) {
+                if (move.TargetPileId === PileDeck) {
                     CurrentGame.Deck.Position++;
                     if (CurrentGame.Deck.Position > CurrentGame.Deck.Cards.length) {
                         CurrentGame.Deck.Position = 0;
                     }
                 } else {
                     card = CurrentGame.Deck.Cards.splice(CurrentGame.Deck.Position - 1, 1)[0];
-                    if (move.TargetPileId == PileFoundation) {
+                    if (move.TargetPileId === PileFoundation) {
                         for (i = 0; i < CurrentGame.Foundations.length; i++) {
-                            if (CurrentGame.Foundations[i].Suit == "" || CurrentGame.Foundations[i].Suit == card.Suit) {
+                            if (CurrentGame.Foundations[i].Suit === "" || CurrentGame.Foundations[i].Suit === card.Suit) {
                                 CurrentGame.Foundations[i].Cards.push(card);
                                 break;
                             }
@@ -264,9 +266,9 @@ $(function () {
                 }
             } else {
                 card = CurrentGame.Piles[move.SourcePileId].StackCards.splice(CurrentGame.Piles[move.SourcePileId].StackCards.length - 1, 1)[0];
-                if (move.TargetPileId == PileFoundation) {
+                if (move.TargetPileId === PileFoundation) {
                     for (i = 0; i < CurrentGame.Foundations.length; i++) {
-                        if (CurrentGame.Foundations[i].Suit == "" || CurrentGame.Foundations[i].Suit == card.Suit) {
+                        if (CurrentGame.Foundations[i].Suit === "" || CurrentGame.Foundations[i].Suit === card.Suit) {
                             CurrentGame.Foundations[i].Cards.push(card);
                             break;
                         }
@@ -293,6 +295,7 @@ $(function () {
                     console.log(e);
                     return;
                 }
+                console.log(game);
                 Solitaire.FullGame.SetGame($ele, game);
             },
             error: function (err) {
