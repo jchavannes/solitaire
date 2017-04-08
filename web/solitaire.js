@@ -2,9 +2,7 @@ var Solitaire = {};
 $(function () {
 
     Solitaire.URL = {
-        Game: "game",
-        FullGame: "full-game",
-        Reset: "reset"
+        Game: "game"
     };
 
     Solitaire.Tempalates = {
@@ -387,7 +385,7 @@ $(function () {
      */
     Solitaire.GetGame = function ($ele) {
         $.ajax({
-            url: Solitaire.URL.FullGame,
+            url: Solitaire.URL.Game,
             success: function (data) {
                 try {
                     /** @type {FullGame} fullGame */
@@ -426,31 +424,6 @@ $(function () {
             moveNumber = Solitaire.CurrentFullGame.Moves.length - 1;
         }
         Solitaire.FullGame.RenderState($ele, moveNumber);
-    };
-
-    /**
-     * @param {jQuery} $ele
-     */
-    Solitaire.ResetGame = function ($ele) {
-        $.ajax({
-            url: Solitaire.URL.Reset,
-            success: function (data) {
-                try {
-                    var game = JSON.parse(data);
-                } catch (e) {
-                    console.log(e);
-                    return;
-                }
-                for (var i = 0; i < game.Deck.Cards.length; i++) {
-                    var card = game.Deck.Cards[i];
-                    console.log(GetCardLetter(card.Number) + " " + card.Suit);
-                }
-                Solitaire.Tempalates.Game($ele, game);
-            },
-            error: function (err) {
-                console.log(err);
-            }
-        });
     };
 
 });
