@@ -2,7 +2,8 @@
 <head>
     <title>Solitaire</title>
 
-    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
     <link rel="stylesheet" type="text/css" href="solitaire.css"/>
 
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
@@ -13,7 +14,8 @@
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
                 <span class="sr-only">Toggle navigation</span>
             </button>
             <a class="navbar-brand" href="./"><h1>Solitaire</h1></a>
@@ -32,11 +34,14 @@
     <br/>
 
     <div class="container">
-        <p>
-            <input id="next-move" class="btn btn-primary" type="button" value="Next Move" />
-            <input id="get-game" class="btn btn-primary" type="button" value="Get Game" />
-            <input id="reset-game" class="btn btn-warning" type="button" value="Reset" />
-        </p>
+        <form class="form-inline">
+            <input id="prev-move" class="btn btn-primary" type="button" value="Prev Move"/>
+            <input id="next-move" class="btn btn-primary" type="button" value="Next Move"/>
+        </form>
+        <form id="goto-move-form" class="form-inline">
+            <input id="goto-move-input" class="form-control" type="text"/>
+            <input id="goto-move" class="btn btn-basic" type="submit" value="Goto Move"/>
+        </form>
     </div>
 
     <br/>
@@ -49,15 +54,13 @@
         $(function () {
             var $game = $("#solitaire-game");
             Solitaire.GetGame($game);
-            $("#next-move").click(function() {
+            $("#prev-move").click(function () {
+                Solitaire.PrevMove($game);
+            });
+            $("#next-move").click(function () {
                 Solitaire.NextMove($game);
             });
-            $("#get-game").click(function() {
-                Solitaire.GetGame($game);
-            });
-            $("#reset-game").click(function() {
-                Solitaire.ResetGame($game);
-            });
+            Solitaire.Form.GotoMove($game, $("#goto-move-form"));
         });
     </script>
 

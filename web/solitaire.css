@@ -44,10 +44,14 @@ footer p {
     padding: 5px;
     box-shadow: 1px 1px 10px rgba(0,0,0,1);
     border-radius: 10px;
+    color: #fff;
 }
 .group h4 {
-    color: #fff;
-    padding-left: 10px;
+    padding: 0 10px;
+}
+.group p {
+    font-weight: bold;
+    padding: 0 10px;
 }
 .board .pile {
     vertical-align: top;
@@ -57,6 +61,7 @@ footer p {
 }
 
 .card {
+    color: #000;
     margin-bottom: -50px;
     padding: 1px;
     width: 68px;
@@ -110,4 +115,11 @@ footer p {
 }
 .card.diamonds .suit {
     background-position: -60px 0;
+}
+.form-inline {
+    display: inline-block;
+}
+#goto-move-input {
+    width: 60px;
+    margin-left: 25px;
 }

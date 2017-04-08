@@ -253,6 +253,7 @@ func (g *Game) findPileToPileMovesWithSubCards() []Move {
 				possibleMove := Move{
 					SourceCard: currentCard,
 					SourcePileId: sourcePileId,
+					SourcePileIndex: i,
 					TargetPileId: targetPileId,
 				}
 				if len(targetPile.StackCards) > 0 {
@@ -276,6 +277,7 @@ func (g *Game) findDeckToPileMoves() []Move {
 					SourcePileId: PileDeck,
 					TargetPileId: targetPileId,
 				})
+				break
 			}
 		}
 	}
@@ -288,13 +290,15 @@ func (g *Game) findPileToFoundationMoves() []Move {
 		if len(sourcePile.StackCards) == 0 {
 			continue
 		}
-		sourceCard := sourcePile.StackCards[len(sourcePile.StackCards) - 1]
+		index := len(sourcePile.StackCards) - 1
+		sourceCard := sourcePile.StackCards[index]
 		for _, foundation := range g.Foundations {
 			if len(foundation.Cards) == 0 && sourceCard.Number == 1 {
 				possibleMoves = append(possibleMoves, Move{
 					SourceCard: sourceCard,
 					SourcePileId: sourcePileId,
 					TargetPileId: PileFoundation,
+					SourcePileIndex: index,
 				})
 				break
 			}
@@ -303,6 +307,7 @@ func (g *Game) findPileToFoundationMoves() []Move {
 					SourceCard: sourceCard,
 					SourcePileId: sourcePileId,
 					TargetPileId: PileFoundation,
+					SourcePileIndex: index,
 				})
 				break
 			}
@@ -339,22 +344,21 @@ func (g *Game) findDeckToFoundationMoves() []Move {
 	return possibleMoves
 }
 
-func (g *Game) MakeMove(m Move) {
+func (g *Game) MakeMove(m Move) bool {
 	if m.TargetPileId == PileFoundation {
 		if m.SourcePileId == PileDeck {
-			g.moveDeckToFoundation(m)
+			return g.moveDeckToFoundation(m)
 		} else {
-			g.movePileToFoundation(m)
+			return g.movePileToFoundation(m)
 		}
 	} else if m.SourcePileId == PileDeck {
-		g.moveDeckToPile(m)
-		return
+		return g.moveDeckToPile(m)
 	} else {
-		g.movePileToPile(m)
+		return g.movePileToPile(m)
 	}
 }
 
-func (g *Game) movePileToPile(m Move) {
+func (g *Game) movePileToPile(m Move) bool {
 	targetPile := g.Piles[m.TargetPileId]
 	sourcePile := g.Piles[m.SourcePileId]
 	emptyPiles := false
@@ -364,7 +368,7 @@ func (g *Game) movePileToPile(m Move) {
 		}
 	}
 	if len(sourcePile.BaseCards) == 0 && emptyPiles {
-		return
+		return false
 	}
 	sourceIndex := -1
 	for i, sourcePileCard := range g.Piles[m.SourcePileId].StackCards {
@@ -373,35 +377,37 @@ func (g *Game) movePileToPile(m Move) {
 		}
 	}
 	if sourceIndex == -1 {
-		return
+		return false
 	}
 	if len(sourcePile.StackCards) == 0 || ! targetPile.CanMoveCardToPile(m.SourceCard) {
-		return
+		return false
 	}
 	g.Piles[m.TargetPileId].StackCards = append(g.Piles[m.TargetPileId].StackCards, g.Piles[m.SourcePileId].StackCards[sourceIndex:]...)
 	g.Piles[m.SourcePileId].StackCards = g.Piles[m.SourcePileId].StackCards[:sourceIndex]
 	g.Moves++
+	return true
 }
 
-func (g *Game) moveDeckToPile(m Move) {
+func (g *Game) moveDeckToPile(m Move) bool {
 	targetPile := g.Piles[m.TargetPileId]
 	currentCard, err := g.Deck.GetCurrentCard()
 	if err != nil || currentCard != m.SourceCard || ! targetPile.CanMoveCardToPile(m.SourceCard) {
-		return
+		return false
 	}
 	g.Piles[m.TargetPileId].StackCards = append(g.Piles[m.TargetPileId].StackCards, currentCard)
 	g.Deck.PlayCurrentCard()
 	g.Moves++
+	return true
 }
 
-func (g *Game) movePileToFoundation(m Move) {
+func (g *Game) movePileToFoundation(m Move) bool {
 	sourcePile := g.Piles[m.SourcePileId]
 	if len(sourcePile.StackCards) == 0 {
-		return
+		return false
 	}
 	currentCard := sourcePile.StackCards[len(sourcePile.StackCards) - 1]
 	if currentCard != m.SourceCard {
-		return
+		return false
 	}
 	for foundationId, foundation := range g.Foundations {
 		if currentCard.Number == 1 && foundation.Suit == "" {
@@ -418,14 +424,15 @@ func (g *Game) movePileToFoundation(m Move) {
 			//fmt.Printf("Stack: %#v\n", g.Piles[m.SourcePileId].StackCards)
 		}
 		g.Moves++
-		break
+		return true
 	}
+	return false
 }
 
-func (g *Game) moveDeckToFoundation(m Move) {
+func (g *Game) moveDeckToFoundation(m Move) bool {
 	currentCard, err := g.Deck.GetCurrentCard()
 	if err != nil || currentCard != m.SourceCard {
-		return
+		return false
 	}
 	for foundationId, foundation := range g.Foundations {
 		if currentCard.Number == 1 && foundation.Suit == "" {
@@ -436,6 +443,7 @@ func (g *Game) moveDeckToFoundation(m Move) {
 		g.Foundations[foundationId].Cards = append(g.Foundations[foundationId].Cards, currentCard)
 		g.Deck.PlayCurrentCard()
 		g.Moves++
-		break
+		return true
 	}
+	return false
 }

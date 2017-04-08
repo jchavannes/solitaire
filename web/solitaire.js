@@ -9,6 +9,21 @@ $(function () {
 
     Solitaire.Tempalates = {
         /**
+         * @return {string}
+         */
+        InfoHtml: function () {
+            var infoHtml = "";
+            infoHtml +=
+                "<p>Move #: " +
+                (Solitaire.CurrentMove + 1) +
+                "</p>";
+            infoHtml =
+                "<div class='group info'>" +
+                infoHtml +
+                "</div>";
+            return infoHtml
+        },
+        /**
          * @param {[Foundation]} foundations
          * @return {string}
          */
@@ -127,11 +142,12 @@ $(function () {
         Game: function ($ele, game) {
             //console.log("Moves: " + game.Moves + ", Position: " + game.Deck.Position + ", Size: " + game.Deck.Cards.length);
 
+            var infoHtml = Solitaire.Tempalates.InfoHtml() + "<br/>";
             var foundationsHtml = Solitaire.Tempalates.FoundationsHtml(game.Foundations);
             var deckHtml = Solitaire.Tempalates.DeckHtml(game.Deck);
             var pilesHtml = Solitaire.Tempalates.PilesHtml(game.Piles);
 
-            $ele.html(foundationsHtml + deckHtml + pilesHtml);
+            $ele.html(infoHtml + foundationsHtml + deckHtml + pilesHtml);
         },
         Snippets: {
             /**
@@ -208,92 +224,161 @@ $(function () {
     var PileDeck = 7;
     var PileFoundation = 8;
 
-    /** @type {FullGame} CurrentFullGame **/
-    var CurrentFullGame;
-    /** @type {Game} CurrentGame **/
-    var CurrentGame;
-    /** @type {int} CurrentMove **/
-    var CurrentMove;
+    /** @type {FullGame} Solitaire.CurrentFullGame **/
+    Solitaire.CurrentFullGame = {};
+    /** @type {Game} Solitaire.CurrentGame **/
+    Solitaire.CurrentGame = {};
+    /** @type {int} Solitaire.CurrentMove **/
+    Solitaire.CurrentMove = -1;
+
     Solitaire.FullGame = {
         /**
          * @param {jQuery} $ele
-         * @param {Game} game
+         * @param {FullGame} fullGame
          */
-        SetGame: function ($ele, game) {
-            CurrentFullGame = game;
-            //console.log(game);
+        SetGame: function ($ele, fullGame) {
+            Solitaire.CurrentFullGame = Solitaire.FullGame.Copy(fullGame);
             /**
              * @type {Game}
              */
-            CurrentGame = {
+            Solitaire.CurrentGame = {
                 Foundations: [
-                    { Cards: null, Suit: null },
-                    { Cards: null, Suit: null },
-                    { Cards: null, Suit: null },
-                    { Cards: null, Suit: null }
+                    {Cards: null, Suit: null},
+                    {Cards: null, Suit: null},
+                    {Cards: null, Suit: null},
+                    {Cards: null, Suit: null}
                 ],
-                Deck: game.Deck,
-                Piles: game.Piles
+                Deck: fullGame.Deck,
+                Piles: fullGame.Piles
             };
-            CurrentMove = 0;
-            Solitaire.Tempalates.Game($ele, CurrentGame);
+            Solitaire.CurrentMove = -1;
+            Solitaire.Tempalates.Game($ele, Solitaire.CurrentGame);
+        },
+        /**
+         * @param {FullGame} fullGame
+         */
+        Copy: function (fullGame) {
+            return JSON.parse(JSON.stringify(fullGame))
         },
         /**
          * @param {jQuery} $ele
+         * @param {int} moveNumber
          */
-        NextMove: function($ele) {
-            var move = CurrentFullGame.Moves[CurrentMove];
-            console.log(move);
-            var card, cards, i;
+        RenderState: function ($ele, moveNumber) {
+            var fullGame = Solitaire.FullGame.Copy(Solitaire.CurrentFullGame);
+            Solitaire.CurrentGame = {
+                Foundations: [
+                    {Cards: null, Suit: null},
+                    {Cards: null, Suit: null},
+                    {Cards: null, Suit: null},
+                    {Cards: null, Suit: null}
+                ],
+                Deck: fullGame.Deck,
+                Piles: fullGame.Piles
+            };
+            console.log("Move #" + moveNumber + ":");
+            if (moveNumber >= 0) {
+                console.log(Solitaire.CurrentFullGame.Moves[moveNumber]);
+            }
+            for (var i = 0; i <= moveNumber; i++) {
+                Solitaire.FullGame.DoMove(i);
+            }
+            Solitaire.CurrentMove = moveNumber;
+            Solitaire.Tempalates.Game($ele, Solitaire.CurrentGame);
+        },
+        /**
+         * @param {int} moveNum
+         */
+        DoMove: function (moveNum) {
+            var move = Solitaire.CurrentFullGame.Moves[moveNum];
             if (move.SourcePileId === PileDeck) {
-                if (move.TargetPileId === PileDeck) {
-                    CurrentGame.Deck.Position++;
-                    if (CurrentGame.Deck.Position > CurrentGame.Deck.Cards.length) {
-                        CurrentGame.Deck.Position = 0;
-                    }
-                } else {
-                    card = CurrentGame.Deck.Cards.splice(CurrentGame.Deck.Position - 1, 1)[0];
-                    CurrentGame.Deck.Position--;
-                    if (move.TargetPileId === PileFoundation) {
-                        for (i = 0; i < CurrentGame.Foundations.length; i++) {
-                            if (CurrentGame.Foundations[i].Suit === null || CurrentGame.Foundations[i].Suit === card.Suit) {
-                                if (CurrentGame.Foundations[i].Cards === null) {
-                                    CurrentGame.Foundations[i].Cards = [];
-                                }
-                                CurrentGame.Foundations[i].Cards.push(card);
-                                CurrentGame.Foundations[i].Suit = card.Suit;
-                                break;
-                            }
-                        }
-                    } else {
-                        CurrentGame.Piles[move.TargetPileId].StackCards.push(card);
-                    }
-                }
+                /** From Deck */
+                Solitaire.FullGame.Moves.FromDeck(move);
             } else {
-                cards = CurrentGame.Piles[move.SourcePileId].StackCards.splice(0, CurrentGame.Piles[move.SourcePileId].StackCards.length);
-                if (move.TargetPileId === PileFoundation) {
-                    for (i = 0; i < CurrentGame.Foundations.length; i++) {
-                        if (CurrentGame.Foundations[i].Suit === null || CurrentGame.Foundations[i].Suit === cards[0].Suit) {
-                            if (CurrentGame.Foundations[i].Cards === null) {
-                                CurrentGame.Foundations[i].Cards = [];
-                            }
-                            CurrentGame.Foundations[i].Cards.push(cards[0]);
-                            CurrentGame.Foundations[i].Suit = cards[0].Suit;
-                            break;
-                        }
+                /** From Pile */
+                Solitaire.FullGame.Moves.FromPile(move);
+            }
+        },
+        Moves: {
+            /**
+             * @param {Move} move
+             */
+            FromDeck: function (move) {
+                var card;
+                if (move.TargetPileId === PileDeck) {
+                    /** Deck flip */
+                    Solitaire.CurrentGame.Deck.Position++;
+                    if (Solitaire.CurrentGame.Deck.Position > Solitaire.CurrentGame.Deck.Cards.length) {
+                        Solitaire.CurrentGame.Deck.Position = 0;
                     }
                 } else {
-                    for (i = 0; i < cards.length; i++) {
-                        CurrentGame.Piles[move.TargetPileId].StackCards.push(cards[i]);
+                    /** To Pile or Foundation */
+                    card = Solitaire.CurrentGame.Deck.Cards.splice(Solitaire.CurrentGame.Deck.Position - 1, 1)[0];
+                    Solitaire.CurrentGame.Deck.Position--;
+                    if (move.TargetPileId === PileFoundation) {
+                        /** To Foundation */
+                        Solitaire.FullGame.Moves.ToFoundation(card);
+                    } else {
+                        /** To Pile */
+                        Solitaire.CurrentGame.Piles[move.TargetPileId].StackCards.push(card);
                     }
                 }
-                if (CurrentGame.Piles[move.SourcePileId].BaseCards && CurrentGame.Piles[move.SourcePileId].BaseCards.length > 0) {
-                    card = CurrentGame.Piles[move.SourcePileId].BaseCards.splice(0, 1)[0];
-                    CurrentGame.Piles[move.SourcePileId].StackCards.push(card);
+            },
+            /**
+             * @param {Move} move
+             */
+            FromPile: function (move) {
+                var card, cards, i;
+                cards = Solitaire.CurrentGame.Piles[move.SourcePileId].StackCards.splice(move.SourcePileIndex, Solitaire.CurrentGame.Piles[move.SourcePileId].StackCards.length);
+                if (move.TargetPileId === PileFoundation) {
+                    /** To Foundation */
+                    Solitaire.FullGame.Moves.ToFoundation(cards[0]);
+                } else {
+                    /** To Pile */
+                    for (i = 0; i < cards.length; i++) {
+                        Solitaire.CurrentGame.Piles[move.TargetPileId].StackCards.push(cards[i]);
+                    }
+                }
+                var notSubCardMove = move.SourcePileIndex === 0;
+                var hasBaseCards = Solitaire.CurrentGame.Piles[move.SourcePileId].BaseCards && Solitaire.CurrentGame.Piles[move.SourcePileId].BaseCards.length > 0;
+                if (notSubCardMove && hasBaseCards) {
+                    card = Solitaire.CurrentGame.Piles[move.SourcePileId].BaseCards.splice(0, 1)[0];
+                    Solitaire.CurrentGame.Piles[move.SourcePileId].StackCards.push(card);
+                }
+            },
+            /**
+             * @param {Card} card
+             */
+            ToFoundation: function(card) {
+                for (var i = 0; i < Solitaire.CurrentGame.Foundations.length; i++) {
+                    if (Solitaire.CurrentGame.Foundations[i].Suit === null || Solitaire.CurrentGame.Foundations[i].Suit === card.Suit) {
+                        if (Solitaire.CurrentGame.Foundations[i].Cards === null) {
+                            Solitaire.CurrentGame.Foundations[i].Cards = [];
+                        }
+                        Solitaire.CurrentGame.Foundations[i].Cards.push(card);
+                        Solitaire.CurrentGame.Foundations[i].Suit = card.Suit;
+                        break;
+                    }
                 }
             }
-            Solitaire.Tempalates.Game($ele, CurrentGame);
-            CurrentMove++;
+        }
+    };
+
+    Solitaire.Form = {
+        /**
+         * @param {jQuery} $game
+         * @param {jQuery} $gotoMoveForm
+         */
+        GotoMove: function ($game, $gotoMoveForm) {
+            $gotoMoveForm.submit(function(e) {
+                e.preventDefault();
+                var val = $gotoMoveForm.find("[type=text]").val();
+                if (val == 0) {
+                    val = 0;
+                }
+                val--;
+                Solitaire.FullGame.RenderState($game, val);
+            });
         }
     };
 
@@ -305,13 +390,15 @@ $(function () {
             url: Solitaire.URL.FullGame,
             success: function (data) {
                 try {
-                    var game = JSON.parse(data);
+                    /** @type {FullGame} fullGame */
+                    var fullGame = JSON.parse(data);
                 } catch (e) {
                     console.log(e);
                     return;
                 }
-                console.log(game);
-                Solitaire.FullGame.SetGame($ele, game);
+                console.log("Full game:");
+                console.log(fullGame);
+                Solitaire.FullGame.SetGame($ele, fullGame);
             },
             error: function (err) {
                 console.log(err);
@@ -323,7 +410,22 @@ $(function () {
      * @param {jQuery} $ele
      */
     Solitaire.NextMove = function ($ele) {
-        Solitaire.FullGame.NextMove($ele);
+        var moveNumber = Solitaire.CurrentMove + 1;
+        if (moveNumber >= Solitaire.CurrentFullGame.Moves.length) {
+            moveNumber = 0;
+        }
+        Solitaire.FullGame.RenderState($ele, moveNumber);
+    };
+
+    /**
+     * @param {jQuery} $ele
+     */
+    Solitaire.PrevMove = function ($ele) {
+        var moveNumber = Solitaire.CurrentMove - 1;
+        if (moveNumber < -1) {
+            moveNumber = Solitaire.CurrentFullGame.Moves.length - 1;
+        }
+        Solitaire.FullGame.RenderState($ele, moveNumber);
     };
 
     /**
@@ -368,6 +470,7 @@ $(function () {
  *   TargetCard: Card
  *   SourcePileId: int
  *   TargetPileId: int
+ *   SourcePileIndex: int
  * }} Move
  */
 

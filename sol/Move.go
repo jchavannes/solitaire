@@ -5,4 +5,5 @@ type Move struct {
 	TargetCard   Card
 	SourcePileId int
 	TargetPileId int
+	SourcePileIndex int
 }

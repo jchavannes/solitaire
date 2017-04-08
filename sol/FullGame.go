@@ -31,9 +31,10 @@ func (g *FullGame) Generate(game Game) {
 			})
 		}
 		moves := game.FindPossibleMoves()
-		g.Moves = append(g.Moves, moves...)
 		for _, move := range moves {
-			game.MakeMove(move)
+			if game.MakeMove(move) {
+				g.Moves = append(g.Moves, move)
+			}
 		}
 		if len(moves) == 0 {
 			if len(game.Deck.Cards) == 0 {

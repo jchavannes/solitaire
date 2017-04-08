@@ -22,6 +22,6 @@ func (d *Deck) PlayCurrentCard() {
 func (d *Deck) NextCard() {
 	d.Position++
 	if d.Position > len(d.Cards) {
-		d.Position = 1
+		d.Position = 0
 	}
 }
