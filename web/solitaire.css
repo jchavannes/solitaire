@@ -1,3 +1,6 @@
+body {
+    overflow-y: scroll;
+}
 .navbar {
     margin-bottom: 0;
     min-height: 55px;
@@ -36,6 +39,10 @@ footer p {
     text-align: center;
 }
 
+.section {
+    display: inline-block;
+    vertical-align: top;
+}
 .group {
     vertical-align: top;
     text-align: left;
@@ -79,9 +86,9 @@ footer p {
 }
 .card.empty {
     background: none;
+    margin-bottom: 10px;
 }
 .card.deck {
-    background: #99e;
     margin-bottom: 10px;
 }
 .card.empty-deck {

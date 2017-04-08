@@ -56,39 +56,40 @@ $(function () {
          * @param {Deck} deck
          * @return {string}
          */
-        DeckHtml: function (deck) {
+        DeckHtmlNew: function (deck) {
             var deckHtml = "";
+            var deckPile1Html = "";
+            var deckPile2Html = "";
             var card, i;
-            if (deck.Position === 0) {
-                if (deck.Cards.length > 0) {
-                    card = deck.Cards[0];
-                    deckHtml += Solitaire.Tempalates.Snippets.CardFlipped(card);
+
+            for (i = 0; i < deck.Cards.length; i++) {
+                card = deck.Cards[i];
+                if (i === deck.Position - 1) {
+                    deckHtml = Solitaire.Tempalates.Snippets.CardDeck(card);
+                } else if (i < deck.Position) {
+                    deckPile1Html = Solitaire.Tempalates.Snippets.CardFlipped(card) + deckPile1Html;
                 } else {
-                    deckHtml += Solitaire.Tempalates.Snippets.CardEmpty();
-                }
-            } else {
-                var startCard = deck.Position - 3;
-                if (startCard < 0) {
-                    startCard = 0;
-                }
-                if (deck.Position > 0) {
-                    if (deck.Position === deck.Cards.length) {
-                        deckHtml += Solitaire.Tempalates.Snippets.CardEmptyDeck();
-                    } else {
-                        card = deck.Cards[deck.Position];
-                        deckHtml += Solitaire.Tempalates.Snippets.CardFlippedDeck(card);
-                    }
-                }
-                for (i = startCard; i < deck.Position; i++) {
-                    card = deck.Cards[i];
-                    deckHtml += Solitaire.Tempalates.Snippets.Card(card);
+                    deckPile2Html += Solitaire.Tempalates.Snippets.CardFlipped(card);
                 }
             }
+
+            if (deckHtml == "") {
+                deckHtml = Solitaire.Tempalates.Snippets.CardEmpty();
+            }
+
+            if (deckPile1Html == "") {
+                deckPile1Html = Solitaire.Tempalates.Snippets.CardEmpty();
+            }
+
             deckHtml =
                 "<div class='group deck'>" +
                 "<h4>Deck</h4>" +
                 "<div class='pile'>" +
                 deckHtml +
+                deckPile2Html +
+                "</div>" +
+                "<div class='pile'>" +
+                deckPile1Html +
                 "</div>" +
                 "</div>";
             return deckHtml;
@@ -140,12 +141,23 @@ $(function () {
         Game: function ($ele, game) {
             //console.log("Moves: " + game.Moves + ", Position: " + game.Deck.Position + ", Size: " + game.Deck.Cards.length);
 
-            var infoHtml = Solitaire.Tempalates.InfoHtml() + "<br/>";
+            var infoHtml = Solitaire.Tempalates.InfoHtml();
             var foundationsHtml = Solitaire.Tempalates.FoundationsHtml(game.Foundations);
-            var deckHtml = Solitaire.Tempalates.DeckHtml(game.Deck);
+            var deckHtml = Solitaire.Tempalates.DeckHtmlNew(game.Deck);
             var pilesHtml = Solitaire.Tempalates.PilesHtml(game.Piles);
 
-            $ele.html(infoHtml + foundationsHtml + deckHtml + pilesHtml);
+            $ele.html(
+                "<div class='section'>" +
+                foundationsHtml +
+                "<br/>" +
+                pilesHtml +
+                "</div>" +
+                "<div class='section'>" +
+                infoHtml +
+                "<br/>" +
+                deckHtml +
+                "</div>"
+            );
         },
         Snippets: {
             /**
@@ -155,6 +167,17 @@ $(function () {
             Card: function (card) {
                 var number = GetCardLetter(card.Number);
                 return "<div class='card " + card.Suit + "'>" +
+                    "<span>" + number + "</span>" +
+                    "<div class='suit'></div>" +
+                    "</div>";
+            },
+            /**
+             * @param {Card} card
+             * @return {string}
+             */
+            CardDeck: function (card) {
+                var number = GetCardLetter(card.Number);
+                return "<div class='card deck " + card.Suit + "'>" +
                     "<span>" + number + "</span>" +
                     "<div class='suit'></div>" +
                     "</div>";
@@ -410,7 +433,7 @@ $(function () {
     Solitaire.NextMove = function ($ele) {
         var moveNumber = Solitaire.CurrentMove + 1;
         if (moveNumber >= Solitaire.CurrentFullGame.Moves.length) {
-            moveNumber = 0;
+            moveNumber = -1;
         }
         Solitaire.FullGame.RenderState($ele, moveNumber);
     };
