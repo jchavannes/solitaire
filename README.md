@@ -1,6 +1,6 @@
-## Solitaire
+## Solitaire Golf
 
-App for solving solitaire games.
+App for solving solitaire in as few moves possible.
 
 #### Run
 ```bash

@@ -56,7 +56,7 @@ $(function () {
          * @param {Deck} deck
          * @return {string}
          */
-        DeckHtmlNew: function (deck) {
+        DeckHtml: function (deck) {
             var deckHtml = "";
             var deckPile1Html = "";
             var deckPile2Html = "";
@@ -116,7 +116,7 @@ $(function () {
                 if (hasStackCards) {
                     for (j = 0; j < pile.StackCards.length; j++) {
                         card = pile.StackCards[j];
-                        tmpHtml += Solitaire.Tempalates.Snippets.Card(card);
+                        tmpHtml += Solitaire.Tempalates.Snippets.CardWithDeckHighlight(card);
                     }
                 }
                 if (!hasBaseCards && !hasStackCards) {
@@ -139,11 +139,9 @@ $(function () {
          * @param {Game} game
          */
         Game: function ($ele, game) {
-            //console.log("Moves: " + game.Moves + ", Position: " + game.Deck.Position + ", Size: " + game.Deck.Cards.length);
-
             var infoHtml = Solitaire.Tempalates.InfoHtml();
             var foundationsHtml = Solitaire.Tempalates.FoundationsHtml(game.Foundations);
-            var deckHtml = Solitaire.Tempalates.DeckHtmlNew(game.Deck);
+            var deckHtml = Solitaire.Tempalates.DeckHtml(game.Deck);
             var pilesHtml = Solitaire.Tempalates.PilesHtml(game.Piles);
 
             $ele.html(
@@ -167,6 +165,25 @@ $(function () {
             Card: function (card) {
                 var number = GetCardLetter(card.Number);
                 return "<div class='card " + card.Suit + "'>" +
+                    "<span>" + number + "</span>" +
+                    "<div class='suit'></div>" +
+                    "</div>";
+            },
+            /**
+             * @param {Card} card
+             * @return {string}
+             */
+            CardWithDeckHighlight: function (card) {
+                var number = GetCardLetter(card.Number);
+                var isOriginallyDeckCard = false;
+                for (var i = 0; i < Solitaire.CurrentFullGame.Deck.Cards.length; i++) {
+                    var deckCard = Solitaire.CurrentFullGame.Deck.Cards[i];
+                    if (card.Number === deckCard.Number && card.Suit === deckCard.Suit) {
+                        isOriginallyDeckCard = true;
+                    }
+                }
+                var deckCardClass = isOriginallyDeckCard ? "deck-card" : "";
+                return "<div class='card " + deckCardClass + " " + card.Suit + "'>" +
                     "<span>" + number + "</span>" +
                     "<div class='suit'></div>" +
                     "</div>";
@@ -297,9 +314,8 @@ $(function () {
                 Deck: fullGame.Deck,
                 Piles: fullGame.Piles
             };
-            console.log("Move #" + moveNumber + ":");
-            if (moveNumber >= 0) {
-                console.log(Solitaire.CurrentFullGame.Moves[moveNumber]);
+            if (moveNumber > -1) {
+                //console.log(Solitaire.CurrentFullGame.Moves[moveNumber])
             }
             for (var i = 0; i <= moveNumber; i++) {
                 Solitaire.FullGame.DoMove(i);
@@ -417,8 +433,6 @@ $(function () {
                     console.log(e);
                     return;
                 }
-                console.log("Full game:");
-                console.log(fullGame);
                 Solitaire.FullGame.SetGame($ele, fullGame);
             },
             error: function (err) {
@@ -456,6 +470,7 @@ $(function () {
  *   Deck: Deck
  *   Piles: []Pile
  *   Moves: []Move
+ *   NoPileCards: []int
  *   Won: bool
  * }} FullGame
  */

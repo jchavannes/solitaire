@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/jchavannes/solitaire/sol"
 )
 
 var (
@@ -18,6 +19,16 @@ var (
 		},
 	}
 
+	verifyCmd = &cobra.Command{
+		Use:   "verify",
+		Short: "Run solitaire cli app",
+		RunE: func (c *cobra.Command, args []string) error {
+			game := sol.GetGame3()
+			game.OutputMissingCards()
+			return nil
+		},
+	}
+
 	webCmd = &cobra.Command{
 		Use:   "web",
 		Short: "Run solitaire web app",
@@ -29,6 +40,7 @@ var (
 
 func Run() error {
 	solitaireCmd.AddCommand(cliCmd)
+	solitaireCmd.AddCommand(verifyCmd)
 	solitaireCmd.AddCommand(webCmd)
 	return solitaireCmd.Execute()
 }

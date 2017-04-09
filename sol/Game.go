@@ -13,6 +13,7 @@ type Game struct {
 	Moves         int
 	SkipPercent   int
 	RecentSubCard bool
+	NoPileCards   []NoPileCard
 }
 
 const (
@@ -175,11 +176,12 @@ func (g *Game) FindPossibleMoves() []Move {
 		possibleMoves = append(possibleMoves, g.findPileToFoundationMoves()...)
 		if len(possibleMoves) == 0 {
 			possibleMoves = append(possibleMoves, g.findDeckToPileMoves()...)
-			if len(possibleMoves) == 0 && rand.Intn(100) < 20 {
+			if len(possibleMoves) == 0 {
 				if g.RecentSubCard {
 					g.RecentSubCard = false
 				} else {
-					possibleMoves = append(possibleMoves, g.findPileToPileMovesWithSubCards()...)
+					subCardMoves := g.findPileToPileMovesWithSubCards()
+					possibleMoves = append(possibleMoves, subCardMoves...)
 					g.RecentSubCard = true
 				}
 			}
@@ -214,12 +216,19 @@ func (g *Game) findPileToPileMoves() []Move {
 		if len(sourcePile.BaseCards) == 0 && emptyPiles {
 			continue
 		}
+		PILES:
 		for targetPileId, targetPile := range g.Piles {
 			if targetPileId == sourcePileId || ! targetPile.CanMoveCardToPile(sourcePile.StackCards[0]) {
 				continue
 			}
 			if sourcePile.StackCards[0].Number == 13 && len(sourcePile.BaseCards) == 0 {
 				continue
+			}
+			for i, noPileCard := range g.NoPileCards {
+				if sourcePile.StackCards[0] == noPileCard.Card && noPileCard.Times > 0 {
+					g.NoPileCards[i].Times--
+					continue PILES
+				}
 			}
 			//fmt.Printf("Can move %#v to pile %#v\n", sourcePile.StackCards[0], targetPile.StackCards)
 			possibleMove := Move{
@@ -269,6 +278,14 @@ func (g *Game) findPileToPileMovesWithSubCards() []Move {
 func (g *Game) findDeckToPileMoves() []Move {
 	var possibleMoves []Move
 	currentCard, err := g.Deck.GetCurrentCard()
+	for i, noPileCard := range g.NoPileCards {
+		//fmt.Printf("noPileCard: %d, g.Moves: %d\n", noPileCard, g.Moves)
+		//fmt.Printf("g.Deck.Cards[noPileCard]: %#v\n", g.Deck.Cards[noPileCard])
+		if currentCard == noPileCard.Card && noPileCard.Times > 0 {
+			g.NoPileCards[i].Times--
+			return possibleMoves
+		}
+	}
 	if err == nil {
 		for targetPileId, targetPile := range g.Piles {
 			if targetPileId != PileDeck && targetPile.CanMoveCardToPile(currentCard) {
@@ -367,7 +384,7 @@ func (g *Game) movePileToPile(m Move) bool {
 			emptyPiles = true
 		}
 	}
-	if len(sourcePile.BaseCards) == 0 && emptyPiles {
+	if len(sourcePile.BaseCards) == 0 && m.SourcePileIndex == 0 && emptyPiles {
 		return false
 	}
 	sourceIndex := -1

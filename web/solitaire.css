@@ -95,6 +95,9 @@ footer p {
     background: none;
     margin-bottom: 10px;
 }
+.card.deck-card {
+    background: #fcc;
+}
 .card span {
     font-size: 26px;
     display: inline-block;

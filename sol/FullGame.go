@@ -1,10 +1,16 @@
 package sol
 
 type FullGame struct {
-	Piles [7]Pile
-	Deck  Deck
-	Moves []Move
-	Won   bool
+	Piles       [7]Pile
+	Deck        Deck
+	Moves       []Move
+	NoPileCards []NoPileCard
+	Won         bool
+}
+
+type NoPileCard struct {
+	Card  Card
+	Times int
 }
 
 func (g *FullGame) Generate(game Game) {
@@ -50,6 +56,41 @@ func (g *FullGame) Generate(game Game) {
 		} else {
 			game.FlipPiles()
 		}
+		if game.IsGameCompleted() {
+			g.Won = true
+			break
+		}
 	}
 
+}
+
+func (g *FullGame) Optimize() {
+	for i := 0; i < len(g.Moves); i++ {
+		move := g.Moves[i]
+		if move.SourcePileId == PileDeck || move.SourcePileIndex == 0 {
+			continue
+		}
+		for h := i - 1; h > 0; h-- {
+			compareMove := g.Moves[h]
+			if move.TargetPileId == compareMove.SourcePileId {
+				if compareMove.SourceCard == move.SourceCard {
+					for j := h + 1; j < i; j++ {
+						checkMove := g.Moves[j]
+						if checkMove.SourcePileId == move.SourcePileId {
+							g.Moves[j].SourcePileId = compareMove.SourcePileId
+							g.Moves[j].SourcePileIndex += (compareMove.SourcePileIndex - move.SourcePileIndex)
+						}
+						if checkMove.TargetPileId == move.SourcePileId {
+							g.Moves[j].TargetPileId = compareMove.SourcePileId
+						}
+					}
+					//fmt.Printf("i: %d, h: %d, move.TargetPileId: %d, compareMove.SourcePileId: %d, move.SourceCard: %#v, compareMove.SourceCard: %#v\n", i, h, move.TargetPileId, compareMove.SourcePileId, move.SourceCard, compareMove.SourceCard)
+					g.Moves = append(g.Moves[:i], g.Moves[i + 1:]...)
+					g.Moves = append(g.Moves[:h], g.Moves[h + 1:]...)
+					i--
+				}
+				break
+			}
+		}
+	}
 }
