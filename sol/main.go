@@ -253,7 +253,7 @@ func GetGame3() *Game {
 // High score: 98
 // #2 high score: 108
 // Lowest high score: 109
-// Personal score: 120
+// Personal score: 117
 func GetGame4() *Game {
 	return &Game{
 		Piles: [7]Pile{
@@ -278,7 +278,7 @@ func GetGame4() *Game {
 			{BaseCards: []Card{
 				{Number: 2, Suit: Clubs},
 				{Number: 13, Suit: Hearts},
-				{Number: 13, Suit: Clubs},
+				{Number: 7, Suit: Clubs},
 				{Number: 1, Suit: Hearts},
 				{Number: 13, Suit: Spades},
 			}},

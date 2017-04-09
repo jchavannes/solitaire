@@ -17,19 +17,13 @@ var (
 		Pattern: "/game",
 		Handler: func(r *web.Response) {
 			var leastMoves sol.FullGame
-			for i := 0; i < 1; i++ {
+			preGame := getFullGame([]sol.NoPileCard{})
+			for i := 0; i < 24; i++ {
+				card := preGame.Deck.Cards[i]
 				fullGame := getFullGame([]sol.NoPileCard{
 					{
-						Card: sol.Card{Number: 11, Suit: sol.Diamonds},
+						Card: card,
 						Times: 1000,
-					},
-					{
-						Card: sol.Card{Number: 2, Suit: sol.Clubs},
-						Times: 1000,
-					},
-					{
-						Card: sol.Card{Number: 7, Suit: sol.Diamonds},
-						Times: 20,
 					},
 				})
 				lessMoves := len(fullGame.Moves) < len(leastMoves.Moves)
@@ -59,7 +53,7 @@ func runWeb() error {
 }
 
 func getFullGame(noPileCards []sol.NoPileCard) sol.FullGame {
-	game := sol.GetGame3()
+	game := sol.GetGame4()
 	game.FlipPiles()
 	game.NoPileCards = noPileCards
 	fullGame := sol.FullGame{}
