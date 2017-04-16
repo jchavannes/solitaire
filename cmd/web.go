@@ -19,19 +19,26 @@ var (
 			var leastMoves sol.FullGame
 			preGame := getFullGame([]sol.NoPileCard{})
 			for i := 0; i < 24; i++ {
-				card := preGame.Deck.Cards[i]
-				fullGame := getFullGame([]sol.NoPileCard{
-					{
-						Card: card,
-						Times: 1000,
-					},
-				})
-				lessMoves := len(fullGame.Moves) < len(leastMoves.Moves)
-				winAlreadyAndThisIsALoss := leastMoves.Won == true && fullGame.Won == false
-				firstWin := leastMoves.Won == false && fullGame.Won == true
-				better := !winAlreadyAndThisIsALoss && (lessMoves || firstWin)
-				if len(leastMoves.Moves) == 0 || better {
-					leastMoves = fullGame
+				for j := 0; j < 24; j++ {
+					card := preGame.Deck.Cards[i]
+					secondCard := preGame.Deck.Cards[j]
+					fullGame := getFullGame([]sol.NoPileCard{
+						{
+							Card: card,
+							Times: 1000,
+						},
+						{
+							Card: secondCard,
+							Times: 1000,
+						},
+					})
+					lessMoves := len(fullGame.Moves) < len(leastMoves.Moves)
+					winAlreadyAndThisIsALoss := leastMoves.Won == true && fullGame.Won == false
+					firstWin := leastMoves.Won == false && fullGame.Won == true
+					better := !winAlreadyAndThisIsALoss && (lessMoves || firstWin)
+					if len(leastMoves.Moves) == 0 || better {
+						leastMoves = fullGame
+					}
 				}
 			}
 			r.WriteJson(leastMoves, true)
@@ -53,7 +60,7 @@ func runWeb() error {
 }
 
 func getFullGame(noPileCards []sol.NoPileCard) sol.FullGame {
-	game := sol.GetGame4()
+	game := sol.GetGame7()
 	game.FlipPiles()
 	game.NoPileCards = noPileCards
 	fullGame := sol.FullGame{}

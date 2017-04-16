@@ -65,25 +65,37 @@ func (g *FullGame) Generate(game Game) {
 }
 
 func (g *FullGame) Optimize() {
+	// Loop through all moves
 	for i := 0; i < len(g.Moves); i++ {
 		move := g.Moves[i]
+		// Ignore moves that are from deck or top of a pile
 		if move.SourcePileId == PileDeck || move.SourcePileIndex == 0 {
 			continue
 		}
+		// Loop backwards through moves, starting from current move being checked
 		for h := i - 1; h > 0; h-- {
 			compareMove := g.Moves[h]
-			if move.TargetPileId == compareMove.SourcePileId {
-				if compareMove.SourceCard == move.SourceCard {
+			// If current move target pile equals compare move source pile
+			if move.TargetPileId == compareMove.SourcePileId || move.TargetPileId == compareMove.TargetPileId {
+				// If same card being moved, remove card
+				if compareMove.SourceCard == move.SourceCard && move.SourcePileId == compareMove.TargetPileId {
+					//fmt.Println("Removing moves:")
+					// Loop through all moves in between
 					for j := h + 1; j < i; j++ {
-						checkMove := g.Moves[j]
+						checkMove := &g.Moves[j]
+						// If moves have same source pile, update check move to other new source pile
 						if checkMove.SourcePileId == move.SourcePileId {
-							g.Moves[j].SourcePileId = compareMove.SourcePileId
-							g.Moves[j].SourcePileIndex += (compareMove.SourcePileIndex - move.SourcePileIndex)
+							//fmt.Printf("Updating move: %#v to use source pile id: %d\n", checkMove, compareMove.SourcePileId)
+							checkMove.SourcePileId = compareMove.SourcePileId
+							checkMove.SourcePileIndex += (compareMove.SourcePileIndex - move.SourcePileIndex)
 						}
+						// If check move target is current move source, update to other new move source
 						if checkMove.TargetPileId == move.SourcePileId {
-							g.Moves[j].TargetPileId = compareMove.SourcePileId
+							//fmt.Printf("Updating move: %#v to use target pile id: %d\n", checkMove, move.TargetPileId)
+							checkMove.TargetPileId = move.TargetPileId
 						}
 					}
+					//fmt.Printf("CompareMove: %#v\nMove: %#v\n", compareMove, move)
 					//fmt.Printf("i: %d, h: %d, move.TargetPileId: %d, compareMove.SourcePileId: %d, move.SourceCard: %#v, compareMove.SourceCard: %#v\n", i, h, move.TargetPileId, compareMove.SourcePileId, move.SourceCard, compareMove.SourceCard)
 					g.Moves = append(g.Moves[:i], g.Moves[i + 1:]...)
 					g.Moves = append(g.Moves[:h], g.Moves[h + 1:]...)

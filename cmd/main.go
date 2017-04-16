@@ -23,7 +23,7 @@ var (
 		Use:   "verify",
 		Short: "Run solitaire cli app",
 		RunE: func (c *cobra.Command, args []string) error {
-			game := sol.GetGame4()
+			game := sol.GetGame5()
 			game.OutputMissingCards()
 			return nil
 		},
